@@ -1,4 +1,3 @@
-using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace TodoListApp.WebApi.Models
@@ -8,21 +7,26 @@ namespace TodoListApp.WebApi.Models
         public int Id { get; set; }
 
         [Required]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         public string? Description { get; set; }
 
-        public string AssigneeId { get; set; }
-
-        public DateTime CreationDate { get; set; }
-
-        public DateTime DueDate { get; set; }
-
-        public Collection<string>? Tags { get; set; }
-
-        public Collection<string>? Comments { get; set; }
+        [Required]
+        public string AssigneeId { get; set; } = string.Empty;
 
         [Required]
-        public StatusApiModel Status { get; set; }
+        public DateTime CreationDate { get; set; }
+
+        [Required]
+        public DateTime DueDate { get; set; }
+
+        public ICollection<string>? Tags { get; init; }
+
+        public ICollection<string>? Comments { get; init; }
+
+        public int TodoListId { get; set; }
+
+        [Required]
+        public StatusApiModel Status { get; set; } = new StatusApiModel();
     }
 }
