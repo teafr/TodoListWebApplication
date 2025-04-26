@@ -1,0 +1,60 @@
+@model TaskViewModel
+
+@{
+    ViewData["Title"] = "Edit Task";
+    Layout = "~/Views/Shared/_CenterLayout.cshtml";
+}
+
+<h1>Edit Task</h1>
+
+<div>
+    <form asp-action="Edit" asp-controller="Tasks" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" asp-for="Title" class="form-control" id="title" value="@Model.Title">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" asp-for="Description" id="description" value="@Model.Description">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Due Date</label>
+            <input type="text" class="form-control" asp-for="DueDate" id="description" value="@Model.DueDate.ToString("MM/dd/yyyy")">
+        </div>
+        <div class="form-group mb-3">
+            <label asp-for="Status" for="statusDropDown">Status</label>
+            <select asp-for="Status.Id" value="@Model.Status.Name" id="statusDropDown" class="form-control">
+                <option value="@((int)StatusOfTask.NotStarted)">Not Started</option>
+                <option value="@((int)StatusOfTask.InProgress)">In Progress</option>
+                <option value="@((int)StatusOfTask.Completed)">Completed</option>
+            </select>
+            <span asp-validation-for="Status.Id" class="text-danger"></span>
+        </div>
+        <div class="form-group">
+            <input asp-for="Id" type="hidden" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input asp-for="Status.Name" type="hidden" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input asp-for="Status.Id" type="hidden" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input asp-for="CreationDate" type="hidden" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input asp-for="Assignee.Id" type="hidden" class="form-control" value="@(Model.Assignee?.Id ?? string.Empty)" />
+        </div>
+        <div class="form-group">
+            <input asp-for="TodoListId" type="hidden" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input asp-for="Tags" type="hidden" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input asp-for="Comments" type="hidden" class="form-control" />
+        </div>
+        <input type="submit" class="btn btn-secondary w-100 p-2" value="Edit" />
+    </form>
+</div>

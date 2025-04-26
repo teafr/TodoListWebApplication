@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+@inject SignInManager<IdentityUser> signInManager;
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -7,43 +9,64 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/TodoListApp.WebApp.styles.css" asp-append-version="true" />
+    <style>
+        .comment-item:hover .comment-actions {
+            display: inline-block !important;
+        }
+
+        .tag-item:hover .tag-remove-icon {
+            display: inline-block !important;
+        }
+    </style>
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">TodoListApp.WebApp</a>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-secondary border-bottom box-shadow mb-3">
+            <div class="container-fluid text-light">
+                <a class="navbar-brand text-light" asp-area="" asp-controller="Tasks" asp-action="Index">To-do List</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+                aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+                        @if (signInManager.IsSignedIn(User))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Tasks" asp-action="Index">Tasks</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="TodoLists" asp-action="Index">Todo Lists</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Tasks" asp-action="GetTags">Tags</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" asp-controller="Tasks" asp-action="SearchTasks">Search</a>
+                            </li>
+                        }
+                        <partial name="_LoginPartial" />
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
+
+    <div class="row p-1 m-1">
+        @RenderBody()
     </div>
 
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - TodoListApp.WebApp - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            &copy; 2025 - To-do list Application
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/task-table.js" asp-append-version="true"></script>
+    <script src="~/js/hidden-form.js" asp-append-version="true"></script>
+    <script src="~/js/event-handler.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

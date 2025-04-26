@@ -1,39 +1,58 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using TodoListApp.ApiClient.Extensions;
+using TodoListApp.ApiClient.Services;
 using TodoListApp.WebApp.Contexts;
+using TodoListApp.WebApp.Handler;
+using TodoListApp.WebApp.Helpers;
+using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Extensions;
 
 internal static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddApiEndpoints(this IServiceCollection services)
-    {
-        _ = services.AddEndpointsApiExplorer();
-        return services;
-    }
-
     public static IServiceCollection ConfigureServices(this IServiceCollection services, IConfiguration configuration)
     {
-        _ = services.AddDbContext<IdentityContext>(options =>
+        string baseUrl = configuration["WebApiSettings:BaseUrl"] ?? string.Empty;
+
+        _ = services.AddHttpContextAccessor();
+        _ = services.AddTransient<AuthHeaderHandler>();
+
+        _ = services.AddHttpClient<TaskApiClientService>(client =>
         {
-            _ = options.UseSqlServer(configuration.GetConnectionString("TodoListDbConnection"));
-        });
+            client.BaseAddress = new Uri(baseUrl);
+        }).AddHttpMessageHandler<AuthHeaderHandler>();
 
-        _ = services.AddIdentityCore<IdentityUser>().AddEntityFrameworkStores<IdentityContext>().AddApiEndpoints();
-
-        string apiBaseAddress = configuration["ApiBaseAddress"] ?? string.Empty;
-        services.AddTodoListApiClientService(options => options.ApiBaseAdress = apiBaseAddress);
-        services.AddTaskApiClientService(options => options.ApiBaseAdress = apiBaseAddress);
+        _ = services.AddHttpClient<TodoListApiClientService>(client =>
+        {
+            client.BaseAddress = new Uri(baseUrl);
+        }).AddHttpMessageHandler<AuthHeaderHandler>();
 
         return services;
     }
 
-    //public static IServiceCollection AddDependensies(this IServiceCollection services)
-    //{
-    //    //_ = services.AddTransient<ITodoListService, TodoListService>();
-    //    //_ = services.AddTransient<ITaskService, TaskService>();
+    public static IServiceCollection AddDependencies(this IServiceCollection services)
+    {
+        _ = services.AddDbContext<IdentityContext>();
+        _ = services.AddScoped<ITodoListWebApiService, TodoListWebApiService>();
+        _ = services.AddScoped<ITaskWebApiService, TaskWebApiService>();
+        _ = services.AddScoped<JwtTokenGenerator>();
 
-    //    return services;
-    //}
+        return services;
+    }
+
+    public static IServiceCollection ConfigureIdentity(this IServiceCollection services)
+    {
+        _ = services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        {
+            options.User.RequireUniqueEmail = true;
+            options.Password.RequiredLength = 8;
+            options.Password.RequireDigit = true;
+            options.Password.RequireLowercase = false;
+            options.Password.RequireUppercase = false;
+            options.Password.RequireNonAlphanumeric = false;
+        })
+        .AddEntityFrameworkStores<IdentityContext>()
+        .AddDefaultTokenProviders();
+
+        return services;
+    }
 }

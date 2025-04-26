@@ -1,23 +1,54 @@
-using Newtonsoft.Json;
+using TodoListApp.ApiClient.Services;
 using TodoListApp.WebApi.Models;
+using TodoListApp.WebApp.Extensions;
+using TodoListApp.WebApp.Models;
 
 namespace TodoListApp.WebApp.Services;
 
-public class TodoListWebApiService
+public class TodoListWebApiService : ITodoListWebApiService
 {
-    private readonly HttpClient httpClient;
+    private readonly TodoListApiClientService todoListApiClient;
 
-    public TodoListWebApiService(HttpClient httpClient)
+    public TodoListWebApiService(TodoListApiClientService todoListApiClient)
     {
-        ArgumentNullException.ThrowIfNull(httpClient);
-        this.httpClient = httpClient;
+        this.todoListApiClient = todoListApiClient;
     }
 
-    public async Task<TodoListApiModel?> GetTodoListAsync(int id)
+    public async Task<List<TodoListModel>> GetTodoListsByUserIdAsync(string userId)
     {
-        var response = await this.httpClient.GetAsync(new Uri($"api/todolists/{id}"));
-        _ = response.EnsureSuccessStatusCode();
-        var content = await response.Content.ReadAsStringAsync();
-        return JsonConvert.DeserializeObject<TodoListApiModel>(content);
+        List<TodoListApiModel>? todoLists = await this.todoListApiClient.GetTodoListsByUserIdAsync(userId);
+        return todoLists?.Select(list => new TodoListModel(list)).ToList() ?? new List<TodoListModel>();
+    }
+
+    public async Task<TodoListModel?> GetTodoListByIdAsync(int id)
+    {
+        TodoListApiModel? todoList = await this.todoListApiClient.GetTodoListByIdAsync(id);
+        return todoList is null ? null : new TodoListModel(todoList);
+    }
+
+    public async Task<List<TaskModel>> GetTasksByTodoListIdAsync(int todoListId)
+    {
+        List<TaskApiModel>? tasks = await this.todoListApiClient.GetTasksByTodoListIdAsync(todoListId);
+        return tasks?.Select(task => new TaskModel(task)).ToList() ?? new List<TaskModel>();
+    }
+
+    public async Task CreateTodoListAsync(TodoListModel todoList)
+    {
+        await this.todoListApiClient.CreateTodoListAsync(todoList.ToTodoListApiModel());
+    }
+
+    public async Task UpdateTodoListAsync(TodoListModel todoList)
+    {
+        await this.todoListApiClient.UpdateTodoListAsync(todoList.ToTodoListApiModel());
+    }
+
+    public async Task DeleteTodoListAsync(int todoListId)
+    {
+        await this.todoListApiClient.DeleteTodoListAsync(todoListId);
+    }
+
+    public async Task DeleteListsByUserIdAsync(string userId)
+    {
+        await this.todoListApiClient.DeleteLodoListsByUserId(userId);
     }
 }

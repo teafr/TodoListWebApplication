@@ -9,7 +9,7 @@ internal static class Program
         var builder = WebApplication.CreateBuilder(args);
 
         _ = builder.Services.AddControllersWithViews();
-        _ = builder.Services.ConfigureServices(builder.Configuration);
+        _ = builder.Services.ConfigureIdentity().ConfigureServices(builder.Configuration).AddDependencies();
 
         var app = builder.Build();
 
@@ -24,11 +24,10 @@ internal static class Program
 
         _ = app.UseRouting();
 
+        _ = app.UseAuthentication();
         _ = app.UseAuthorization();
 
-        _ = app.MapControllerRoute(
-            name: "default",
-            pattern: "{controller=Home}/{action=Index}/{id?}");
+        _ = app.AddRoutes();
 
         app.Run();
     }

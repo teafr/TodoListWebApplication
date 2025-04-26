@@ -1,0 +1,33 @@
+@model List<string>
+
+@{
+    ViewData["Title"] = "Tags";
+    Layout = "~/Views/Shared/_CenterLayout.cshtml";
+}
+
+<h1>Tags</h1>
+<div class="accordion" id="tagsAccordion">
+    @foreach (var tag in Model)
+    {
+        var tagId = SanitizeId(tag);
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading@(tagId)">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(tagId)" aria-expanded="false" aria-controls="collapse@(tagId)">
+                    @tag
+                </button>
+            </h2>
+            <div id="collapse@(tagId)" class="accordion-collapse collapse" aria-labelledby="heading@(tagId)" data-bs-parent="#tagsAccordion">
+                <div class="accordion-body">
+                    @(await Component.InvokeAsync("GetTasksByTag", new { tag }))
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+@functions {
+    string SanitizeId(string tag)
+    {
+        return tag.Replace(" ", "-").Replace(".", "").Replace("#", "").Replace("/", "-");
+    }
+}

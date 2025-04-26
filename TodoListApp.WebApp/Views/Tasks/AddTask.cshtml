@@ -1,0 +1,39 @@
+@model TaskViewModel
+
+@{
+    ViewData["Title"] = "Task creation";
+    Layout = "~/Views/Shared/_CenterLayout.cshtml";
+}
+
+<h1>Task creation</h1>
+
+<div>
+    <form asp-action="AddTask" asp-controller="Tasks" method="post">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" asp-for="Title" class="form-control" id="title" placeholder="title of to-do list">
+        </div>
+        <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <input type="text" class="form-control" asp-for="Description" id="description" placeholder="description of to-do list">
+        </div>
+        <div class="mb-3">
+            <label for="dueDate" class="form-label">Due date</label>
+            <input type="text" class="form-control" asp-for="DueDate" id="dueDate" value="@DateTime.Now.ToString("MM/dd/yyyy")">
+        </div>
+        <div class="form-group">
+            <input asp-for="TodoListId" type="hidden" class="form-control" />
+        </div>
+        <div class="form-group">
+            <input asp-for="CreationDate" type="hidden" class="form-control" value="@DateTime.Now" />
+        </div>
+        <div class="form-group">
+            <input asp-for="Status.Id" type="hidden" class="form-control" value="@((int)StatusOfTask.NotStarted)" />
+        </div>
+        <div class="form-group">
+            <input asp-for="Status.Name" type="hidden" class="form-control" value="@string.Empty" />
+        </div>
+        <input type="submit" class="btn btn-secondary w-100 p-2" value="Create" />
+    </form>
+</div>

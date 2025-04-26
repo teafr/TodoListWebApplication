@@ -1,0 +1,11 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="col-3">
+    @await Component.InvokeAsync("TodoListMenu", new { selectedTodoListId = ViewBag.CurrentTodoListId })
+</div>
+
+<main role="main" class="col-9">
+    @RenderBody()
+</main>

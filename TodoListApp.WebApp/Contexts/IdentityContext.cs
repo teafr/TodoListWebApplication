@@ -6,8 +6,15 @@ namespace TodoListApp.WebApp.Contexts;
 
 public class IdentityContext : IdentityDbContext<IdentityUser>
 {
-    public IdentityContext(DbContextOptions<IdentityContext> options)
-        : base(options)
+    private readonly string connectionString;
+
+    public IdentityContext(IConfiguration configuration)
     {
+        this.connectionString = configuration.GetConnectionString("IdentityDbConnection") ?? string.Empty;
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        _ = optionsBuilder.UseSqlServer(this.connectionString);
     }
 }

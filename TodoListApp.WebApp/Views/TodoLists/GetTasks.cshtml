@@ -1,0 +1,42 @@
+@model TodoListViewModel
+
+@{
+    ViewBag.Title = @Model.Title + " Tasks";
+    Layout = "~/Views/Shared/_TodoListLayout.cshtml";
+}
+
+<h2>@Model.Title Tasks</h2>
+<p>@Model.Description</p>
+
+@await Html.PartialAsync("_TasksPartial", Model.TasksList)
+
+@if (Model.TasksList is not null)
+{
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center align-items-center m-0 mt-2">
+            <li class="page-item">
+                <a class="page-link text-secondary" href="@Url.Action("GetTasks", "TodoLists", new { todoListId = Model.Id, currentPage = Model.TasksList.PaginationInfo.CurrentPage - 1 })" aria-label="Previous">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
+                        <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
+                    </svg>
+                </a>
+            </li>
+            @foreach (var i in Enumerable.Range(1, Model.TasksList.PaginationInfo.TotalPages))
+            {
+                <li class="page-item">
+                    <a class="page-link @(i == Model.TasksList.PaginationInfo.CurrentPage ? "active bg-secondary text-light" : "text-secondary")"
+                       href="@Url.Action("GetTasks", "TodoLists", new { todoListId = Model.Id, currentPage = i })">@i</a>
+                </li>
+            }
+            <li class="page-item">
+                <a class="page-link text-secondary" href="@Url.Action("GetTasks", "TodoLists", new { todoListId = Model.Id, currentPage = Model.TasksList.PaginationInfo.CurrentPage + 1 })" aria-label="Next">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-right-fill" viewBox="0 0 16 16">
+                        <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
+                    </svg>
+                </a>
+            </li>
+        </ul>
+    </nav>
+}
+
+<a asp-action="AddTask" asp-controller="Tasks" asp-route-todoListId="@Model.Id" class="btn btn-secondary">Add task</a>

@@ -1,0 +1,37 @@
+@model ListOfTasks
+
+@{
+    List<TaskViewModel> tasks = Model.Tasks.Skip((Model.PaginationInfo.CurrentPage - 1) * Model.PaginationInfo.PageSize).Take(Model.PaginationInfo.PageSize).ToList();
+}
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th scope="col">Task title</th>
+            <th scope="col">Description</th>
+            <th scope="col">Due date</th>
+            <th scope="col">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (!Model.Tasks.Any())
+        {
+            <tr>
+                <td colspan="4" class="text-center">No tasks available</td>
+            </tr>
+        }
+        else
+        {
+            @foreach (var task in tasks)
+            {
+                <tr class="clickable-row @(task.DueDate < DateTime.Now && task.Status.Id != (int)StatusOfTask.Completed ? "bg-danger" : "")"
+                    data-url="@Url.Action("Details", "Tasks", new { taskId = task.Id })" style="cursor:pointer;">
+                    <td>@task.Title</td>
+                    <td>@task.Description</td>
+                    <td>@task.DueDate.ToString("MM/dd/yyyy")</td>
+                    <td>@task.Status.Name</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

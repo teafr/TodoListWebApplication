@@ -1,0 +1,10 @@
+@model (List<IdentityUser> users, int taskId)
+
+<div class="list-group">
+    @foreach (var user in Model.users)
+    {
+        <a asp-action="AssignTask" asp-controller="Tasks" asp-route-taskId="@Model.taskId" asp-route-assigneeId="@user.Id" class="list-group-item list-group-item-action">
+            @user.UserName
+        </a>
+    }
+</div>

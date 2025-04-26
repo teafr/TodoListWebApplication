@@ -1,0 +1,66 @@
+@model List<string>
+@inject SignInManager<IdentityUser> SignInManager;
+
+<div class="bg-secondary p-2 rounded-1">
+    <h4 class="text-light">
+        <span>Filters</span>
+        <a href="/" class="btn btn-sm btn-outline-light float-end">Drop</a>
+    </h4>
+
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div class="mb-2">
+            <div class="dropdown w-100 mb-2">
+                <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center" type="button" id="status-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span>Filter by status</span>
+                    <span class="dropdown-toggle ms-2"></span>
+                </button>
+
+                <ul class="dropdown-menu w-100" aria-labelledby="status-dropdown">
+                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.NotStarted)" class="dropdown-item">Not started</a></li>
+                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.InProgress)" class="dropdown-item">In Progress</a></li>
+                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.Completed)" class="dropdown-item">Completed</a></li>
+                </ul>
+            </div>
+
+            <div class="dropdown w-100 mb-2">
+                <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center" type="button" id="tag-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span>Filter by tag</span>
+                    <span class="dropdown-toggle ms-2"></span>
+                </button>
+
+                <ul class="dropdown-menu w-100" aria-labelledby="tag-dropdown">
+                    @foreach (var tag in Model)
+                    {
+                        <li><a asp-action="Index" asp-controller="Tasks" asp-route-tag="@tag" class="dropdown-item">@tag</a></li>
+                    }
+                </ul>
+            </div>
+
+            <div class="dropdown w-100">
+                <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center" type="button" id="sort-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span>Sort by</span>
+                    <span class="dropdown-toggle ms-2"></span>
+                </button>
+
+                <ul class="dropdown-menu w-100" aria-labelledby="sort-dropdown">
+                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.Title.ToString()" class="dropdown-item">Title</a></li>
+                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.DueDate.ToString()" class="dropdown-item">Due Date</a></li>
+                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.CreationDate.ToString()" class="dropdown-item">CreationDate</a></li>
+                </ul>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-light mt-1">
+            No filters for unauthorized users
+        </div>
+    }
+</div>
+@if (!SignInManager.IsSignedIn(User))
+{
+    <div class="alert alert-warning mt-2" role="alert">
+        You need to be logged in to see and filter your tasks.
+    </div>
+}

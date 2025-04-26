@@ -1,0 +1,165 @@
+@model TaskViewModel
+@inject UserManager<IdentityUser> userManager;
+
+@{
+    ViewData["Title"] = "Task details";
+    Layout = "~/Views/Shared/_CenterLayout.cshtml";
+    string? searchQuery = Context.Request.Query["searchQuery"];
+}
+
+<h1 class="mb-2">
+    Task details
+    <a asp-action="Delete" asp-controller="Tasks" asp-route-taskId="@Model.Id" class="btn text-danger float-end">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+            <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+        </svg>
+    </a>
+    <a asp-action="Edit" asp-controller="Tasks" asp-route-taskId="@Model.Id" class="btn text-secondary float-end">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+        </svg>
+    </a>
+</h1>
+
+<table class="table table-bordered">
+    <tr>
+        <th scope="col" class="col-4">Title</th>
+        <td>@Model.Title</td>
+    </tr>
+    <tr>
+        <th scope="col" class="col-4">Description</th>
+        <td>@Model.Description</td>
+    </tr>
+    <tr>
+        <th scope="col" class="col-4">Due Date</th>
+        <td>@Model.DueDate.ToString("MM/dd/yyyy")</td>
+    </tr>
+    <tr>
+        <th scope="col" class="col-4">Creation Date</th>
+        <td>@Model.CreationDate.ToString("MM/dd/yyyy")</td>
+    </tr>
+    <tr>
+        <th scope="col" class="col-4">Status</th>
+        <td>
+            @Model.Status.Name
+            <span class="float-end">
+                @if (Model.Status.Id == (int)StatusOfTask.NotStarted)
+                {
+                    <a asp-action="StartTask" asp-controller="Tasks" asp-route-taskId="@Model.Id" class="btn btn-outline-primary">Start</a>
+                }
+                else if (Model.Status.Id == (int)StatusOfTask.InProgress)
+                {
+                    <a asp-action="CompleteTask" asp-controller="Tasks" asp-route-taskId="@Model.Id" class="btn btn-outline-success">Complete</a>
+                }
+            </span>
+        </td>
+    </tr>
+    <tr>
+        <th scope="col" class="col-4">Assignee</th>
+        <td>
+            <span class="float-start col-5">@Model.Assignee?.UserName</span>
+            @if ((await userManager.GetUserAsync(User)) == Model.Assignee)
+            {
+                <button class="btn btn-outline-primary float-end mb-2" onclick="toggleForm('assigneeForm')">Assign</button>
+
+                <form asp-action="Details" asp-controller="Tasks" id="assigneeForm" method="get" class="input-group-sm @(string.IsNullOrEmpty(searchQuery) ? "d-none" : "")">
+                    <input type="hidden" name="taskId" value="@Model.Id" />
+                    <div class="d-flex w-100">
+                        <input type="text" name="searchQuery" class="form-control" value="@searchQuery" placeholder="Type to search user..." aria-label="Search user">
+                        <button class="btn text-secondary" type="submit">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+                            </svg>
+                        </button>
+                    </div>
+                </form>
+
+                @if (!string.IsNullOrEmpty(searchQuery))
+                {
+                    <div class="mt-1">
+                        @await Component.InvokeAsync("SearchUsers", new { taskId = Model.Id, searchQuery = searchQuery })
+                    </div>
+                }
+            }
+        </td>
+    </tr>
+    <tr>
+        <th scope="col" class="col-4">Tags</th>
+        <td>
+            @foreach (var tag in Model.Tags!)
+            {
+                <div class="tag-item d-inline-block me-1 mb-1 position-relative">
+                    <a asp-action="RemoveTag" asp-controller="Tasks" asp-route-taskId="@Model.Id" asp-route-tag="@tag" class="btn btn-secondary position-relative pe-5">
+                        @tag
+                        <span class="tag-remove-icon position-absolute end-0 top-50 translate-middle-y me-2 d-none">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                <path d="M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z" />
+                            </svg>
+                        </span>
+                    </a>
+                </div>
+            }
+
+            <button class="btn btn-outline-dark float-end" onclick="toggleForm('tagForm')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+                </svg> Add
+            </button>
+
+            <form id="tagForm" class="d-none" asp-action="AddTag" asp-controller="Tasks" method="post">
+                <input type="hidden" name="taskId" value="@Model.Id" />
+                <div class="input-group w-50">
+                    <input type="text" name="tag" class="form-control" placeholder="New tag" required />
+                    <button type="submit" class="btn btn-secondary">Save</button>
+                </div>
+            </form>
+        </td>
+    </tr>
+
+    <tr>
+        <th scope="col" class="col-4">Comments</th>
+        <td>
+            @foreach (var comment in Model.Comments!)
+            {
+                var commentId = "comment-" + comment.Replace(" ", "-").Replace(".", "").Replace("!", "");
+
+                <div class="comment-item mb-1" id="@commentId">
+                    <div class="comment-display d-flex justify-content-between align-items-center">
+                        <span class="fst-italic">@comment</span>
+                        <span class="comment-actions d-none">
+                            <button type="button" class="btn btn-sm text-secondary me-1" onclick="toggleEdit('@commentId')">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                    <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+                                </svg>
+                            </button>
+                            <a asp-action="RemoveComment" asp-controller="Tasks" asp-route-taskId="@Model.Id" asp-route-comment="@comment" class="btn btn-sm text-danger">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                                </svg>
+                            </a>
+                        </span>
+                    </div>
+
+                    <form class="d-none comment-edit-form mt-1" method="post" asp-action="EditComment" asp-controller="Tasks">
+                        <input type="hidden" name="taskId" value="@Model.Id" />
+                        <input type="hidden" name="oldComment" value="@comment" />
+                        <div class="input-group input-group-sm">
+                            <input name="newComment" class="form-control" value="@comment" required />
+                            <button class="btn btn-secondary btn-sm" type="submit">Save</button>
+                        </div>
+                    </form>
+                </div>
+            }
+
+            <form asp-action="AddComment" asp-controller="Tasks" method="post">
+                <input type="hidden" name="taskId" value="@Model.Id" />
+                <div class="input-group w-50">
+                    <input type="text" name="comment" class="form-control" placeholder="New comment" required />
+                    <button type="submit" class="btn btn-secondary">Add</button>
+                </div>
+            </form>
+        </td>
+    </tr>
+</table>
+
+<a asp-action="GetTasks" asp-controller="TodoLists" asp-route-todoListId="@Model.TodoListId" class="btn btn-outline-primary">Back to list</a>
