@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.WebApi.Contexts;
-using TodoListApp.WebApi.Entities;
+using TodoListApp.Database.Contexts;
+using TodoListApp.Database.Entities;
 
 namespace TodoListApp.WebApi.Models;
 
@@ -21,18 +21,18 @@ public static class SeedStatusData
         if (!context.Statuses.Any())
         {
             context.Statuses.AddRange(
-                new StatusEntity
-                {
-                    Name = "Not Started",
-                },
-                new StatusEntity
-                {
-                    Name = "In Progress",
-                },
-                new StatusEntity
-                {
-                    Name = "Completed",
-                });
+            new StatusEntity
+            {
+                Name = "Not Started",
+            },
+            new StatusEntity
+            {
+                Name = "In Progress",
+            },
+            new StatusEntity
+            {
+                Name = "Completed",
+            });
 
             _ = context.SaveChanges();
         }

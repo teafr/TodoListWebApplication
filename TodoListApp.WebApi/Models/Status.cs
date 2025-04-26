@@ -1,4 +1,4 @@
-using TodoListApp.WebApi.Entities;
+using TodoListApp.Database.Entities;
 
 namespace TodoListApp.WebApi.Models;
 
@@ -17,7 +17,7 @@ public class Status
         ArgumentNullException.ThrowIfNull(statusApiModel);
 
         this.Id = statusApiModel.Id;
-        this.Name = statusApiModel.Name;
+        this.Name = statusApiModel.Name ?? string.Empty;
     }
 
     public int Id { get; set; }

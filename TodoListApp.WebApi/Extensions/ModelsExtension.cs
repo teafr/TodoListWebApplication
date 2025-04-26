@@ -1,5 +1,4 @@
-using System.Collections.ObjectModel;
-using TodoListApp.WebApi.Entities;
+using TodoListApp.Database.Entities;
 using TodoListApp.WebApi.Models;
 
 namespace TodoListApp.WebApi.Extensions;
@@ -16,7 +15,7 @@ public static class ModelsExtension
             Title = todoList.Title,
             Description = todoList.Description,
             OwnerId = todoList.OwnerId,
-            Tasks = new Collection<TaskApiModel>(),
+            Tasks = new List<TaskApiModel>(),
         };
 
         if (todoList.Tasks is not null)
@@ -41,9 +40,10 @@ public static class ModelsExtension
             Description = task.Description,
             CreationDate = task.CreationDate,
             DueDate = task.DueDate,
-            Tags = task.Tags ?? new Collection<string>(),
-            Comments = task.Comments ?? new Collection<string>(),
+            Tags = task.Tags ?? new List<string>(),
+            Comments = task.Comments ?? new List<string>(),
             Status = task.Status.ToStatusApiModel(),
+            TodoListId = task.TodoListId,
             AssigneeId = task.AssigneeId,
         };
     }
@@ -69,7 +69,7 @@ public static class ModelsExtension
             Title = todoList.Title,
             Description = todoList.Description,
             OwnerId = todoList.OwnerId,
-            Tasks = new Collection<TaskEntity>(),
+            Tasks = new List<TaskEntity>(),
         };
 
         if (todoList.Tasks is not null)
@@ -97,6 +97,11 @@ public static class ModelsExtension
             Tags = task.Tags,
             Comments = task.Comments,
             StatusId = task.Status.Id,
+            Status = new StatusEntity
+            {
+                Id = task.Status.Id,
+                Name = task.Status.Name,
+            },
             CreationDate = task.CreationDate,
             AssigneeId = task.AssigneeId,
         };

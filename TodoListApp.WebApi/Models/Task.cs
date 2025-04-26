@@ -1,5 +1,4 @@
-using System.Collections.ObjectModel;
-using TodoListApp.WebApi.Entities;
+using TodoListApp.Database.Entities;
 
 namespace TodoListApp.WebApi.Models;
 
@@ -34,6 +33,7 @@ public class Task
         this.Comments = taskApiModel.Comments;
         this.Status = new Status(taskApiModel.Status);
         this.AssigneeId = taskApiModel.AssigneeId;
+        this.TodoListId = taskApiModel.TodoListId;
     }
 
     public int Id { get; set; }
@@ -46,13 +46,13 @@ public class Task
 
     public DateTime DueDate { get; set; }
 
-    public Collection<string>? Tags { get; set; }
-
-    public Collection<string>? Comments { get; set; }
+    public Status Status { get; set; }
 
     public string AssigneeId { get; set; }
 
-    public Status Status { get; set; }
-
     public int TodoListId { get; set; }
+
+    public ICollection<string>? Tags { get; init; }
+
+    public ICollection<string>? Comments { get; init; }
 }

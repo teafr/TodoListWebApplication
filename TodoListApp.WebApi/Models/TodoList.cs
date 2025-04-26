@@ -1,5 +1,4 @@
-using System.Collections.ObjectModel;
-using TodoListApp.WebApi.Entities;
+using TodoListApp.Database.Entities;
 
 namespace TodoListApp.WebApi.Models;
 
@@ -13,15 +12,7 @@ public class TodoList
         this.Title = todoListApiModel.Title;
         this.Description = todoListApiModel.Description;
         this.OwnerId = todoListApiModel.OwnerId;
-        this.Tasks = new Collection<Task>();
-
-        if (todoListApiModel.Tasks is not null)
-        {
-            foreach (var task in todoListApiModel.Tasks)
-            {
-                this.Tasks.Add(new Task(task));
-            }
-        }
+        this.Tasks = todoListApiModel.Tasks?.Select(task => new Task(task)).ToList() ?? new List<Task>();
     }
 
     public TodoList(TodoListEntity todoListEntity)
@@ -32,15 +23,7 @@ public class TodoList
         this.Title = todoListEntity.Title;
         this.Description = todoListEntity.Description;
         this.OwnerId = todoListEntity.OwnerId;
-        this.Tasks = new Collection<Task>();
-
-        if (todoListEntity.Tasks is not null)
-        {
-            foreach (var task in todoListEntity.Tasks)
-            {
-                this.Tasks.Add(new Task(task));
-            }
-        }
+        this.Tasks = todoListEntity.Tasks?.Select(task => new Task(task)).ToList() ?? new List<Task>();
     }
 
     public int Id { get; set; }
@@ -51,5 +34,5 @@ public class TodoList
 
     public string OwnerId { get; set; }
 
-    public Collection<Task>? Tasks { get; set; }
+    public ICollection<Task>? Tasks { get; init; }
 }

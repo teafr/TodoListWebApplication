@@ -1,19 +1,14 @@
 using TodoListApp.WebApi.Models;
 
 namespace TodoListApp.WebApi.Services;
+
 public interface ITodoListService
 {
-    System.Threading.Tasks.Task AddTaskAsync(Models.Task newTask);
-
     Task<TodoList> CreateTodoListAsync(TodoList newTodoList);
 
     System.Threading.Tasks.Task DeleteTodoListByIdAsync(int id);
 
-    Task<List<Models.Task>> GetTasksByAssigneeIdAsync(string assigneeId);
-
-    Task<List<Models.Task>> GetTasksByTodoListIdAndStatusIdAsync(int todoListId, int statusId);
-
-    Task<List<Models.Task>> GetTasksByTodoListIdAndTag(int todoListId, string tag);
+    System.Threading.Tasks.Task DeleteTodoListsByUserIdAsync(string userId);
 
     Task<List<Models.Task>> GetTasksByTodoListIdAsync(int todoListId);
 
@@ -24,5 +19,4 @@ public interface ITodoListService
     Task<List<TodoList>> GetTodoListsByUserIdAsync(string userId);
 
     System.Threading.Tasks.Task UpdateTodoListAsync(TodoList todoList);
-
 }

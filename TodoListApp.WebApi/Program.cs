@@ -10,7 +10,10 @@ public static class Program
         var builder = WebApplication.CreateBuilder(args);
 
         _ = builder.Services.AddControllers();
-        _ = builder.Services.AddApiEndpoints().ConfigureServices(builder.Configuration).AddDependensies();
+        _ = builder.Services.AddEndpointsApiExplorer();
+        _ = builder.Services.AddSwaggerGen();
+
+        _ = builder.Services.ConfigureServices(builder.Configuration).AddDependensies();
 
         var app = builder.Build();
 
@@ -20,8 +23,12 @@ public static class Program
             _ = app.UseSwaggerUI();
         }
 
-        _ = app.UseHttpsRedirection();
+        _ = app.UseRouting();
+
+        _ = app.UseAuthentication();
         _ = app.UseAuthorization();
+
+        _ = app.UseHttpsRedirection();
         _ = app.MapControllers();
 
         SeedStatusData.EnsurePopulated(app);

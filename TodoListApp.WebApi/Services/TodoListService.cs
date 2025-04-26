@@ -1,11 +1,11 @@
-using TodoListApp.WebApi.Entities;
+using TodoListApp.Database.Entities;
+using TodoListApp.Database.Repositories;
 using TodoListApp.WebApi.Extensions;
 using TodoListApp.WebApi.Models;
-using TodoListApp.WebApi.Repositories;
 
 namespace TodoListApp.WebApi.Services;
 
-internal class TodoListService : ITodoListService
+public class TodoListService : ITodoListService
 {
     private readonly IRepository<TodoListEntity> todoListRepository;
 
@@ -34,33 +34,37 @@ internal class TodoListService : ITodoListService
 
     public async Task<TodoList> CreateTodoListAsync(TodoList newTodoList)
     {
-        ArgumentNullException.ThrowIfNull(newTodoList);
-
         TodoListEntity todoList = await this.todoListRepository.CreateAsync(newTodoList.ToTodoListEntity());
         return new TodoList(todoList);
     }
 
     public async System.Threading.Tasks.Task UpdateTodoListAsync(TodoList todoList)
     {
-        ArgumentNullException.ThrowIfNull(todoList);
-
-        TodoListEntity? existingList = await this.todoListRepository.GetByIdAsync(todoList.Id);
-        if (existingList is not null)
+        if (todoList is not null)
         {
-            existingList!.Title = todoList.Title;
-            existingList.Description = todoList.Description;
-            existingList.OwnerId = todoList.OwnerId;
+            TodoListEntity? existingList = await this.todoListRepository.GetByIdAsync(todoList.Id);
+            if (existingList is not null)
+            {
+                existingList!.Title = todoList.Title;
+                existingList.Description = todoList.Description;
 
-            await this.todoListRepository.UpdateAsync(existingList);
+                this.todoListRepository.Update(existingList);
+            }
         }
     }
 
     public async System.Threading.Tasks.Task DeleteTodoListByIdAsync(int id)
     {
-        var todoList = await this.todoListRepository.GetByIdAsync(id);
-        if (todoList is not null)
+        await this.todoListRepository.DeleteByIdAsync(id);
+    }
+
+    public async System.Threading.Tasks.Task DeleteTodoListsByUserIdAsync(string userId)
+    {
+        var todoLists = await this.todoListRepository.GetAsync();
+        var lists = todoLists?.Where(list => list.OwnerId == userId) ?? Enumerable.Empty<TodoListEntity>();
+        foreach (var todoList in lists)
         {
-            await this.todoListRepository.DeleteAsync(todoList);
+            this.todoListRepository.Delete(todoList);
         }
     }
 
@@ -68,36 +72,5 @@ internal class TodoListService : ITodoListService
     {
         var todoList = await this.todoListRepository.GetByIdAsync(todoListId);
         return todoList?.Tasks.Select(task => new Models.Task(task)).ToList() ?? new List<Models.Task>();
-    }
-
-    public async Task<List<Models.Task>> GetTasksByAssigneeIdAsync(string assigneeId)
-    {
-        List<TodoListEntity>? todoLists = await this.todoListRepository.GetAsync();
-        return todoLists?.SelectMany(list => list.Tasks)
-                         .Where(task => task.AssigneeId == assigneeId)
-                         .Select(task => new Models.Task(task))?.ToList() ?? new List<Models.Task>();
-    }
-
-    public async Task<List<Models.Task>> GetTasksByTodoListIdAndStatusIdAsync(int todoListId, int statusId)
-    {
-        var todoList = await this.todoListRepository.GetByIdAsync(todoListId);
-        return todoList?.Tasks.Where(task => task.StatusId == statusId)
-                              .Select(task => new Models.Task(task)).ToList() ?? new List<Models.Task>();
-    }
-
-    public async Task<List<Models.Task>> GetTasksByTodoListIdAndTag(int todoListId, string tag)
-    {
-        var todoList = await this.todoListRepository.GetByIdAsync(todoListId);
-        return todoList?.Tasks.Where(task => task?.Tags?.Any(t => t == tag) ?? false)
-                              .Select(task => new Models.Task(task)).ToList() ?? new List<Models.Task>();
-    }
-
-    public async System.Threading.Tasks.Task AddTaskAsync(Models.Task newTask)
-    {
-        ArgumentNullException.ThrowIfNull(newTask);
-
-        TodoListEntity? existingTodoList = await this.todoListRepository.GetByIdAsync(newTask.TodoListId);
-        existingTodoList!.Tasks.Add(newTask.ToTaskEntity());
-        await this.todoListRepository.UpdateAsync(existingTodoList);
     }
 }
