@@ -32,22 +32,22 @@ public class TodoListWebApiService : ITodoListWebApiService
         return tasks?.Select(task => new TaskModel(task)).ToList() ?? new List<TaskModel>();
     }
 
-    public async Task CreateTodoListAsync(TodoListModel todoList)
+    public async System.Threading.Tasks.Task CreateTodoListAsync(TodoListModel todoList)
     {
         await this.todoListApiClient.CreateTodoListAsync(todoList.ToTodoListApiModel());
     }
 
-    public async Task UpdateTodoListAsync(TodoListModel todoList)
+    public async System.Threading.Tasks.Task UpdateTodoListAsync(TodoListModel todoList)
     {
         await this.todoListApiClient.UpdateTodoListAsync(todoList.ToTodoListApiModel());
     }
 
-    public async Task DeleteTodoListAsync(int todoListId)
+    public async System.Threading.Tasks.Task DeleteTodoListAsync(int todoListId)
     {
         await this.todoListApiClient.DeleteTodoListAsync(todoListId);
     }
 
-    public async Task DeleteListsByUserIdAsync(string userId)
+    public async System.Threading.Tasks.Task DeleteListsByUserIdAsync(string userId)
     {
         await this.todoListApiClient.DeleteLodoListsByUserId(userId);
     }

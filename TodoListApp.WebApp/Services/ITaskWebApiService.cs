@@ -9,23 +9,23 @@ public interface ITaskWebApiService
 
     Task<List<string>> GetTagsByUserIdAsync(string userId);
 
-    Task AddCommentAsync(int taskId, string comment);
+    System.Threading.Tasks.Task AddCommentAsync(int taskId, string comment);
 
-    Task AddTagAsync(int taskId, string tag);
+    System.Threading.Tasks.Task AddTagAsync(int taskId, string tag);
 
-    Task CreateTaskAsync(TaskModel task);
+    System.Threading.Tasks.Task CreateTaskAsync(TaskModel task);
 
-    Task UpdateCommentInTaskAsync(int taskId, string oldComment, string newComment);
+    System.Threading.Tasks.Task UpdateCommentInTaskAsync(int taskId, string oldComment, string newComment);
 
-    Task UpdateStatusOfTaskAsync(int taskId, int statusId);
+    System.Threading.Tasks.Task UpdateStatusOfTaskAsync(int taskId, int statusId);
 
-    Task UpdateAssigneeAsync(int taskId, string assigneeId);
+    System.Threading.Tasks.Task UpdateAssigneeAsync(int taskId, string assigneeId);
 
-    Task UpdateTaskAsync(TaskModel task);
+    System.Threading.Tasks.Task UpdateTaskAsync(TaskModel task);
 
-    Task DeleteTaskAsync(int taskId);
+    System.Threading.Tasks.Task DeleteTaskAsync(int taskId);
 
-    Task RemoveCommentFromTaskAsync(int taskId, string comment);
+    System.Threading.Tasks.Task RemoveCommentFromTaskAsync(int taskId, string comment);
 
-    Task RemoveTagFromTaskAsync(int taskId, string tag);
+    System.Threading.Tasks.Task RemoveTagFromTaskAsync(int taskId, string tag);
 }

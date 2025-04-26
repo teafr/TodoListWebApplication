@@ -9,11 +9,11 @@ public interface ITodoListWebApiService
 
     Task<List<TodoListModel>> GetTodoListsByUserIdAsync(string userId);
 
-    Task CreateTodoListAsync(TodoListModel todoList);
+    System.Threading.Tasks.Task CreateTodoListAsync(TodoListModel todoList);
 
-    Task UpdateTodoListAsync(TodoListModel todoList);
+    System.Threading.Tasks.Task UpdateTodoListAsync(TodoListModel todoList);
 
-    Task DeleteListsByUserIdAsync(string userId);
+    System.Threading.Tasks.Task DeleteListsByUserIdAsync(string userId);
 
-    Task DeleteTodoListAsync(int todoListId);
+    System.Threading.Tasks.Task DeleteTodoListAsync(int todoListId);
 }
