@@ -9,6 +9,7 @@ public abstract class BaseRepository<TEntity> : IRepository<TEntity>
     protected BaseRepository(TodoListDbContext context)
     {
         ArgumentNullException.ThrowIfNull(context);
+
         this.Context = context;
         this.DbSet = context.Set<TEntity>();
     }
@@ -19,8 +20,7 @@ public abstract class BaseRepository<TEntity> : IRepository<TEntity>
 
     public virtual async Task<List<TEntity>?> GetAsync()
     {
-        var items = await this.DbSet.ToListAsync();
-        return items;
+        return await this.DbSet.ToListAsync();
     }
 
     public virtual async Task<TEntity?> GetByIdAsync(int id)

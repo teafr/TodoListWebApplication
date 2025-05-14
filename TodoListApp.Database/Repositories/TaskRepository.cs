@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.Database.Contexts;
 using TodoListApp.Database.Entities;
@@ -30,11 +31,9 @@ public class TaskRepository : BaseRepository<TaskEntity>
 
     public override void Update(TaskEntity item)
     {
-        if (item is not null)
-        {
-            this.AttachStatus(item);
-            base.Update(item);
-        }
+        CheckEntity(item);
+        this.AttachStatus(item);
+        base.Update(item);
     }
 
     private static void CheckEntity(TaskEntity? entity)

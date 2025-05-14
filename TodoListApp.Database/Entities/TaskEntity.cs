@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json;
 
 namespace TodoListApp.Database.Entities;
 
@@ -39,24 +38,10 @@ public class TaskEntity : IDatabaseEntity
     public int TodoListId { get; set; }
 
     [Column("tag")]
-    public string? TagsSerialized { get; set; }
-
-    [NotMapped]
-    public ICollection<string>? Tags
-    {
-        get => string.IsNullOrEmpty(this.TagsSerialized) ? new List<string>() : JsonSerializer.Deserialize<List<string>>(this.TagsSerialized);
-        set => this.TagsSerialized = JsonSerializer.Serialize(value);
-    }
+    public string? Tags { get; set; }
 
     [Column("comment")]
-    public string? CommentsSerialized { get; set; }
-
-    [NotMapped]
-    public ICollection<string>? Comments
-    {
-        get => string.IsNullOrEmpty(this.CommentsSerialized) ? new List<string>() : JsonSerializer.Deserialize<List<string>>(this.CommentsSerialized);
-        set => this.CommentsSerialized = JsonSerializer.Serialize(value);
-    }
+    public string? Comments { get; set; }
 
     [Required]
     public StatusEntity Status { get; set; } = new StatusEntity();
