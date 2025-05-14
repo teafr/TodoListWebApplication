@@ -9,6 +9,8 @@ public static class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Host.ConfigureHost();
+
         _ = builder.Services.AddControllers();
         _ = builder.Services.AddEndpointsApiExplorer();
         _ = builder.Services.AddSwaggerGen();

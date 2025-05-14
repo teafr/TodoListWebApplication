@@ -1,3 +1,4 @@
+using System.Text.Json;
 using TodoListApp.Database.Entities;
 using TodoListApp.WebApi.Models;
 
@@ -94,8 +95,8 @@ public static class ModelsExtension
             Description = task.Description,
             DueDate = task.DueDate,
             TodoListId = task.TodoListId,
-            Tags = task.Tags,
-            Comments = task.Comments,
+            Tags = JsonSerializer.Serialize(task.Tags),
+            Comments = JsonSerializer.Serialize(task.Comments),
             StatusId = task.Status.Id,
             Status = new StatusEntity
             {

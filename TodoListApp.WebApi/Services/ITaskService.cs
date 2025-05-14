@@ -22,5 +22,5 @@ public interface ITaskService
 
     Task UpdateTagsAsync(int taskId, ICollection<string> tags);
 
-    Task DeleteTaskAsync(Models.Task taskToDelete);
+    Task DeleteTaskByIdAsync(int id);
 }

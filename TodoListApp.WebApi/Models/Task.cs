@@ -1,3 +1,4 @@
+using System.Text.Json;
 using TodoListApp.Database.Entities;
 
 namespace TodoListApp.WebApi.Models;
@@ -13,8 +14,8 @@ public class Task
         this.Description = entity.Description;
         this.CreationDate = entity.CreationDate;
         this.DueDate = entity.DueDate;
-        this.Tags = entity.Tags;
-        this.Comments = entity.Comments;
+        this.Tags = JsonSerializer.Deserialize<List<string>>(entity.Tags ?? string.Empty);
+        this.Comments = JsonSerializer.Deserialize<List<string>>(entity.Comments ?? string.Empty);
         this.Status = new Status(entity.Status);
         this.TodoListId = entity.TodoListId;
         this.AssigneeId = entity.AssigneeId;
