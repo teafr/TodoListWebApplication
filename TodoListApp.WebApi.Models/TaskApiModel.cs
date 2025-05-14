@@ -6,13 +6,12 @@ namespace TodoListApp.WebApi.Models
     {
         public int Id { get; set; }
 
-        [Required, StringLength(30, MinimumLength = 2)]
+        [Required]
         public string Title { get; set; } = string.Empty;
 
-        [StringLength(100, MinimumLength = 2)]
         public string? Description { get; set; }
 
-        [Required, StringLength(40, MinimumLength = 1)]
+        [Required]
         public string AssigneeId { get; set; } = string.Empty;
 
         [Required]
@@ -27,7 +26,7 @@ namespace TodoListApp.WebApi.Models
 
         public int TodoListId { get; set; }
 
-        [Required, Range(1, 3)]
+        [Required]
         public StatusApiModel Status { get; set; } = new StatusApiModel();
     }
 }
