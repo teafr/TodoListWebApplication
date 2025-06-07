@@ -10,7 +10,7 @@ public static class ModelsExtension
 {
     public static TodoListApiModel ToTodoListApiModel(this TodoListModel todoList)
     {
-        ExceptionHelper.CheckViewModel(todoList);
+        ExceptionHelper.CheckObjectForNull(todoList);
         return new TodoListApiModel
         {
             Id = todoList.Id,
@@ -23,7 +23,7 @@ public static class ModelsExtension
 
     public static TaskApiModel ToTaskApiModel(this TaskModel task)
     {
-        ExceptionHelper.CheckViewModel(task);
+        ExceptionHelper.CheckObjectForNull(task);
         return new TaskApiModel
         {
             Id = task.Id,
@@ -41,7 +41,7 @@ public static class ModelsExtension
 
     public static StatusApiModel ToStatusApiModel(this StatusModel status)
     {
-        ExceptionHelper.CheckViewModel(status);
+        ExceptionHelper.CheckObjectForNull(status);
         return new StatusApiModel
         {
             Id = status.Id,
@@ -51,7 +51,7 @@ public static class ModelsExtension
 
     public static TodoListViewModel ToTodoListViewModel(this TodoListModel todoList, int currentPage = 1)
     {
-        ExceptionHelper.CheckViewModel(todoList);
+        ExceptionHelper.CheckObjectForNull(todoList);
         return new TodoListViewModel
         {
             Id = todoList.Id,
@@ -64,7 +64,7 @@ public static class ModelsExtension
 
     public static TaskViewModel ToTaskViewModel(this TaskModel task, IdentityUser? assignee = null)
     {
-        ExceptionHelper.CheckViewModel(task);
+        ExceptionHelper.CheckObjectForNull(task);
         return new TaskViewModel
         {
             Id = task.Id,
@@ -82,7 +82,7 @@ public static class ModelsExtension
 
     public static StatusViewModel ToStatusViewModel(this StatusModel status)
     {
-        ExceptionHelper.CheckViewModel(status);
+        ExceptionHelper.CheckObjectForNull(status);
         return new StatusViewModel
         {
             Id = status.Id,

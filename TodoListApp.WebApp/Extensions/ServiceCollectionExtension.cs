@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using TodoListApp.ApiClient.Services;
 using TodoListApp.WebApp.Contexts;
-using TodoListApp.WebApp.Handler;
+using TodoListApp.WebApp.Handlers;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Services;
 
@@ -26,6 +27,9 @@ internal static class ServiceCollectionExtension
             client.BaseAddress = new Uri(baseUrl);
         }).AddHttpMessageHandler<AuthHeaderHandler>();
 
+        _ = services.Configure<MessageSenderOptions>(configuration.GetSection("Email"));
+        _ = services.AddScoped<IEmailSender, EmailSender>();
+
         return services;
     }
 
@@ -34,7 +38,7 @@ internal static class ServiceCollectionExtension
         _ = services.AddDbContext<IdentityContext>();
         _ = services.AddScoped<ITodoListWebApiService, TodoListWebApiService>();
         _ = services.AddScoped<ITaskWebApiService, TaskWebApiService>();
-        _ = services.AddScoped<JwtTokenGenerator>();
+        _ = services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
         return services;
     }
