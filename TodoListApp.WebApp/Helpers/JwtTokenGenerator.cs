@@ -6,7 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace TodoListApp.WebApp.Helpers;
 
-public class JwtTokenGenerator
+public class JwtTokenGenerator : ITokenGenerator
 {
     private readonly IConfiguration configuration;
 
