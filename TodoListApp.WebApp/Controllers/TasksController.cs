@@ -134,7 +134,7 @@ public class TasksController : Controller
     [HttpPost]
     public async Task<IActionResult> AddTask(TaskViewModel taskViewModel)
     {
-        ExceptionHelper.CheckViewModel(taskViewModel);
+        ExceptionHelper.CheckObjectForNull(taskViewModel);
 
         if (this.ModelState.IsValid)
         {

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models.ViewModels;
@@ -11,13 +12,15 @@ public class AccountController : Controller
 {
     private readonly UserManager<IdentityUser> userManager;
     private readonly SignInManager<IdentityUser> signInManager;
-    private readonly JwtTokenGenerator jwtTokenGenerator;
+    private readonly ITokenGenerator jwtTokenGenerator;
+    private readonly IEmailSender emailSender;
 
-    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, JwtTokenGenerator jwtTokenGenerator)
+    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ITokenGenerator jwtTokenGenerator, IEmailSender emailSender)
     {
         this.userManager = userManager;
         this.signInManager = signInManager;
         this.jwtTokenGenerator = jwtTokenGenerator;
+        this.emailSender = emailSender;
     }
 
     [AllowAnonymous]
@@ -32,7 +35,7 @@ public class AccountController : Controller
     {
         if (this.ModelState.IsValid)
         {
-            ExceptionHelper.CheckViewModel(loginUser);
+            ExceptionHelper.CheckObjectForNull(loginUser);
             IdentityUser user = await this.userManager.FindByNameAsync(loginUser.Username);
 
             if (user != null)
@@ -47,6 +50,7 @@ public class AccountController : Controller
                         SameSite = SameSiteMode.Lax,
                         Expires = loginUser.RememberMe ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddHours(1),
                     });
+                    await this.emailSender.SendEmailAsync(user.Email, "Login", $"Hi, {user.UserName}! You successfully logged in.");
 
                     return this.Redirect("/");
                 }
@@ -81,10 +85,16 @@ public class AccountController : Controller
     [HttpPost]
     public async Task<IActionResult> Register(RegisterViewModel registerUser)
     {
-        ExceptionHelper.CheckViewModel(registerUser);
+        ExceptionHelper.CheckObjectForNull(registerUser);
 
         if (this.ModelState.IsValid)
         {
+            if (this.userManager.FindByEmailAsync(registerUser.Email) is not null)
+            {
+                this.ModelState.AddModelError(string.Empty, "User with such email already exists.");
+                return this.View(registerUser);
+            }
+
             IdentityUser user = new IdentityUser
             {
                 UserName = registerUser.Username,
@@ -94,6 +104,7 @@ public class AccountController : Controller
             var result = await this.userManager.CreateAsync(user, registerUser.Password);
             if (result.Succeeded)
             {
+                await this.emailSender.SendEmailAsync(user.Email, "Registration", $"Hi, {user.UserName}!\nYou successfully registered in To-do List web application.");
                 return this.RedirectToAction("Login");
             }
             else
