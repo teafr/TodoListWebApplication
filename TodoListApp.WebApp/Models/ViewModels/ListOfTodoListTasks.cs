@@ -7,7 +7,7 @@ public class ListOfTodoListTasks
 {
     public ListOfTodoListTasks(TodoListModel todoListModel)
     {
-        ExceptionHelper.CheckViewModel(todoListModel);
+        ExceptionHelper.CheckObjectForNull(todoListModel);
 
         if (todoListModel.Tasks is not null)
         {
