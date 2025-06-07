@@ -4,18 +4,15 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TodoListApp.WebApp.Helpers;
 
-namespace TodoListApp.WebApp.Handler;
+namespace TodoListApp.WebApp.Handlers;
 
 public class AuthHeaderHandler : DelegatingHandler
 {
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly UserManager<IdentityUser> userManager;
-    private readonly JwtTokenGenerator tokenGenerator;
+    private readonly ITokenGenerator tokenGenerator;
 
-    public AuthHeaderHandler(
-        IHttpContextAccessor httpContextAccessor,
-        UserManager<IdentityUser> userManager,
-        JwtTokenGenerator tokenGenerator)
+    public AuthHeaderHandler(IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager, ITokenGenerator tokenGenerator)
     {
         this.httpContextAccessor = httpContextAccessor;
         this.userManager = userManager;
@@ -24,7 +21,7 @@ public class AuthHeaderHandler : DelegatingHandler
 
     protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
     {
-        ArgumentNullException.ThrowIfNull(request);
+        ExceptionHelper.CheckObjectForNull(request);
 
         var context = this.httpContextAccessor.HttpContext;
         var token = context?.Request.Cookies["JWToken"];
@@ -37,10 +34,8 @@ public class AuthHeaderHandler : DelegatingHandler
             {
                 var jwtToken = handler.ReadJwtToken(token);
 
-                if (jwtToken.ValidTo < DateTime.UtcNow.AddMinutes(5))
+                if (jwtToken.ValidTo < DateTime.UtcNow.AddMinutes(5) && context is not null)
                 {
-                    ArgumentNullException.ThrowIfNull(context);
-
                     var user = await this.userManager.GetUserAsync(context.User);
                     if (user is not null)
                     {
