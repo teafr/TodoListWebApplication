@@ -24,43 +24,46 @@ public class TasksController : Controller
     }
 
     [AllowAnonymous]
-    public async Task<IActionResult> Index(string? sortBy, string? tag, int currentPage = 1, int statusId = 0)
+    public async Task<IActionResult> Index([FromQuery] TaskFilterModel filter)
     {
-        if (this.ModelState.IsValid)
+        ArgumentNullException.ThrowIfNull(filter);
+
+        if (!this.ModelState.IsValid)
         {
-            var userId = this.userManager.GetUserId(this.User);
-            if (userId is null)
-            {
-                return this.View(new ListOfTasks(new List<TaskModel>(), currentPage, 7));
-            }
-
-            List<TaskModel>? tasks = await this.apiService.GetTasksByUserIdAsync(userId);
-            if (statusId != 0)
-            {
-                tasks = tasks?.Where(task => task.Status.Id == statusId).ToList();
-            }
-            else
-            {
-                tasks = tasks?.Where(task => task.Status.Id != (int)StatusOfTask.Completed).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(tag))
-            {
-                tasks = tasks?.Where(task => task.Tags != null && task.Tags.Contains(tag)).ToList();
-            }
-
-            tasks = sortBy switch
-            {
-                "Title" => tasks?.OrderBy(t => t.Title).ToList(),
-                "CreationDate" => tasks?.OrderBy(t => t.CreationDate).ToList(),
-                "DueDate" => tasks?.OrderBy(t => t.DueDate).ToList(),
-                _ => tasks
-            };
-
-            return this.View(new ListOfTasks(tasks ?? new List<TaskModel>(), currentPage, 7));
+            return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
         }
 
-        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+        var userId = this.userManager.GetUserId(this.User);
+        if (userId is null)
+        {
+            return this.View(new ListOfTasks(new List<TaskModel>(), filter.CurrentPage, 7));
+        }
+
+        List<TaskModel>? tasks = await this.apiService.GetTasksByUserIdAsync(userId);
+
+        if (filter.StatusId != 0)
+        {
+            tasks = tasks?.Where(task => task.Status.Id == filter.StatusId).ToList();
+        }
+        else
+        {
+            tasks = tasks?.Where(task => task.Status.Id != (int)StatusOfTask.Completed).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(filter.Tag))
+        {
+            tasks = tasks?.Where(task => task.Tags != null && task.Tags.Contains(filter.Tag)).ToList();
+        }
+
+        tasks = filter.SortBy switch
+        {
+            "Title" => tasks?.OrderBy(t => t.Title).ToList(),
+            "CreationDate" => tasks?.OrderBy(t => t.CreationDate).ToList(),
+            "DueDate" => tasks?.OrderBy(t => t.DueDate).ToList(),
+            _ => tasks
+        };
+
+        return this.View(new ListOfTasks(tasks ?? new List<TaskModel>(), filter.CurrentPage, 7));
     }
 
     public async Task<IActionResult> Details(int taskId)

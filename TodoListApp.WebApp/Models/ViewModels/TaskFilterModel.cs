@@ -1,0 +1,12 @@
+namespace TodoListApp.WebApp.Models.ViewModels;
+
+public class TaskFilterModel
+{
+    public string? SortBy { get; set; }
+
+    public string? Tag { get; set; }
+
+    public int StatusId { get; set; }
+
+    public int CurrentPage { get; set; } = 1;
+}

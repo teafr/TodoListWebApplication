@@ -19,4 +19,6 @@ public class ListOfTasks
     public ICollection<TaskViewModel> Tasks { get; init; }
 
     public PaginationInfo PaginationInfo { get; set; } = new PaginationInfo();
+
+    public TaskFilterModel Filter { get; set; }
 }

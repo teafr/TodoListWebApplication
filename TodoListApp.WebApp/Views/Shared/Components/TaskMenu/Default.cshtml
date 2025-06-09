@@ -1,10 +1,17 @@
 @model List<string>
 @inject SignInManager<IdentityUser> SignInManager;
 
+@{
+    var currentQuery = Context.Request.Query;
+    string? currentSortBy = currentQuery["sortBy"];
+    string? currentStatusId = currentQuery["statusId"];
+    string? currentPage = currentQuery["currentPage"];
+}
+
 <div class="bg-secondary p-2 rounded-1">
     <h4 class="text-light">
         <span>Filters</span>
-        <a href="/" class="btn btn-sm btn-outline-light float-end">Drop</a>
+        <a asp-action="Index" asp-controller="Tasks" class="btn btn-sm btn-outline-light float-end">Drop</a>
     </h4>
 
     @if (SignInManager.IsSignedIn(User))
@@ -17,9 +24,30 @@
                 </button>
 
                 <ul class="dropdown-menu w-100" aria-labelledby="status-dropdown">
-                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.NotStarted)" class="dropdown-item">Not started</a></li>
-                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.InProgress)" class="dropdown-item">In Progress</a></li>
-                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.Completed)" class="dropdown-item">Completed</a></li>
+                    <li>
+                        <a asp-action="Index" asp-controller="Tasks"
+                           asp-route-statusId="@((int)StatusOfTask.NotStarted)"
+                           asp-route-sortBy="@currentSortBy"
+                           asp-route-tag="@currentQuery["tag"]"
+                           asp-route-currentPage="1"
+                           class="dropdown-item">Not Started</a>
+                    </li>
+                    <li>
+                        <a asp-action="Index" asp-controller="Tasks"
+                           asp-route-statusId="@((int)StatusOfTask.InProgress)"
+                           asp-route-sortBy="@currentSortBy"
+                           asp-route-tag="@currentQuery["tag"]"
+                           asp-route-currentPage="1"
+                           class="dropdown-item">In Progress</a>
+                    </li>
+                    <li>
+                        <a asp-action="Index" asp-controller="Tasks"
+                           asp-route-statusId="@((int)StatusOfTask.Completed)"
+                           asp-route-sortBy="@currentSortBy"
+                           asp-route-tag="@currentQuery["tag"]"
+                           asp-route-currentPage="1"
+                           class="dropdown-item">Completed</a>
+                    </li>
                 </ul>
             </div>
 
@@ -32,7 +60,14 @@
                 <ul class="dropdown-menu w-100" aria-labelledby="tag-dropdown">
                     @foreach (var tag in Model)
                     {
-                        <li><a asp-action="Index" asp-controller="Tasks" asp-route-tag="@tag" class="dropdown-item">@tag</a></li>
+                        <li>
+                            <a asp-action="Index" asp-controller="Tasks"
+                               asp-route-tag="@tag"
+                               asp-route-sortBy="@currentSortBy"
+                               asp-route-statusId="@currentStatusId"
+                               asp-route-currentPage="1"
+                               class="dropdown-item">@tag</a>
+                        </li>
                     }
                 </ul>
             </div>
@@ -44,9 +79,30 @@
                 </button>
 
                 <ul class="dropdown-menu w-100" aria-labelledby="sort-dropdown">
-                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.Title.ToString()" class="dropdown-item">Title</a></li>
-                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.DueDate.ToString()" class="dropdown-item">Due Date</a></li>
-                    <li><a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.CreationDate.ToString()" class="dropdown-item">CreationDate</a></li>
+                    <li>
+                        <a asp-action="Index" asp-controller="Tasks"
+                           asp-route-sortBy="@TaskProperty.Title.ToString()"
+                           asp-route-statusId="@currentStatusId"
+                           asp-route-tag="@currentQuery["tag"]"
+                           asp-route-currentPage="1"
+                           class="dropdown-item">Title</a>
+                    </li>
+                    <li>
+                        <a asp-action="Index" asp-controller="Tasks"
+                           asp-route-sortBy="@TaskProperty.DueDate.ToString()"
+                           asp-route-statusId="@currentStatusId"
+                           asp-route-tag="@currentQuery["tag"]"
+                           asp-route-currentPage="1"
+                           class="dropdown-item">Due Date</a>
+                    </li>
+                    <li>
+                        <a asp-action="Index" asp-controller="Tasks"
+                           asp-route-sortBy="@TaskProperty.CreationDate.ToString()"
+                           asp-route-statusId="@currentStatusId"
+                           asp-route-tag="@currentQuery["tag"]"
+                           asp-route-currentPage="1"
+                           class="dropdown-item">Creation Date</a>
+                    </li>
                 </ul>
             </div>
         </div>
