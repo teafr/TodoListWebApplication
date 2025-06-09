@@ -89,7 +89,7 @@ public class AccountController : Controller
 
         if (this.ModelState.IsValid)
         {
-            if (this.userManager.FindByEmailAsync(registerUser.Email) is not null)
+            if (await this.userManager.FindByEmailAsync(registerUser.Email) is not null)
             {
                 this.ModelState.AddModelError(string.Empty, "User with such email already exists.");
                 return this.View(registerUser);
