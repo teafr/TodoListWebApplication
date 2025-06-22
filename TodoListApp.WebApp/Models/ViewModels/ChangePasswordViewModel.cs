@@ -19,4 +19,6 @@ public class ChangePasswordViewModel
     [DataType(DataType.Password)]
     [Display(Name = "Confirm New Password")]
     public string ConfirmNewPassword { get; set; } = string.Empty;
+
+    public string Token { get; set; }
 }
