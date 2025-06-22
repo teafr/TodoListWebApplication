@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models.ViewModels;
 
@@ -117,5 +118,115 @@ public class AccountController : Controller
         }
 
         return this.View(registerUser);
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> VerifyEmail(CheckEmailViewModel verifyEmailModel)
+    {
+        if (this.ModelState.IsValid && verifyEmailModel is not null)
+        {
+            IdentityUser user = await this.userManager.FindByEmailAsync(verifyEmailModel.Email);
+
+            if (user is not null)
+            {
+                var token = this.userManager.GenerateEmailConfirmationTokenAsync(user);
+            }
+        }
+
+        return this.View();
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult ForgotPassword()
+    {
+        string url = $"{this.Request.Scheme}://{this.Request.Host}/Account/ChangePassword";
+        return this.View(new CheckEmailViewModel { ClientUri = url });
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IActionResult> ForgotPassword(CheckEmailViewModel checkEmailModel)
+    {
+        if (this.ModelState.IsValid)
+        {
+            ExceptionHelper.CheckObjectForNull(checkEmailModel);
+            IdentityUser user = await this.userManager.FindByEmailAsync(checkEmailModel.Email);
+
+            if (user is not null)
+            {
+                var token = await this.userManager.GeneratePasswordResetTokenAsync(user);
+                var queryParameters = new Dictionary<string, string>()
+                {
+                    { "token", token },
+                    { "email", checkEmailModel.Email },
+                };
+
+                var resetPasswordUrl = QueryHelpers.AddQueryString(checkEmailModel.ClientUri, queryParameters!);
+                await this.emailSender.SendEmailAsync(checkEmailModel.Email, "Reset Password", $"Hi, {user.UserName}!\nYou requested to reset your password. Please click the link below to reset it:\n{resetPasswordUrl}");
+                return this.RedirectToAction("Message", new { message = $"Message was succesfuly sent on email {checkEmailModel.Email}! You can use generated link during 2 hours." });
+            }
+        }
+
+        return this.View();
+    }
+
+    [AllowAnonymous]
+    public IActionResult Message(string message)
+    {
+        if (string.IsNullOrEmpty(message))
+        {
+            return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+        }
+
+        return this.View("Message", message);
+    }
+
+    [AllowAnonymous]
+    [HttpGet]
+    public IActionResult ChangePassword(string token, string email)
+    {
+        if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
+        {
+            return this.BadRequest("Invalid token or email.");
+        }
+
+        return this.View(new ChangePasswordViewModel
+        {
+            Token = token,
+            Email = email,
+        });
+    }
+
+    [AllowAnonymous]
+    [HttpPost]
+    public async Task<IActionResult> ChangePassword(ChangePasswordViewModel changePasswordModel)
+    {
+        if (this.ModelState.IsValid && changePasswordModel is not null)
+        {
+            IdentityUser user = await this.userManager.FindByEmailAsync(changePasswordModel.Email);
+            if (user is not null)
+            {
+                var result = await this.userManager.ResetPasswordAsync(user, changePasswordModel.Token, changePasswordModel.NewPassword);
+                if (result.Succeeded)
+                {
+                    await this.emailSender.SendEmailAsync(user.Email, "Change Password", $"Hi, {user.UserName}!\nYou successfully changed your password.");
+                    return this.RedirectToAction("Login");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        this.ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+            }
+            else
+            {
+                this.ModelState.AddModelError(string.Empty, "User with such email doesn't exist.");
+            }
+        }
+
+        return this.View(changePasswordModel);
     }
 }
