@@ -1,0 +1,17 @@
+@model string
+
+@{
+    ViewData["Title"] = "Message";
+    Layout = "~/Views/Shared/_AccountLayout.cshtml";
+}
+
+<div class="col-md-4 bg-white p-4 rounded shadow">
+    <h2 class="text-center mb-4">Message</h2>
+    <div class="alert alert-info" role="alert">
+        @Model
+    </div>
+
+    <div class="text-center">
+        <a asp-controller="Tasks" asp-action="Index" class="text-decoration-none mt-3">Back</a>
+    </div>
+</div>

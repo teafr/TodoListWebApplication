@@ -19,6 +19,9 @@
             <input id="password" asp-for="Password" type="password" class="form-control" />
             <span asp-validation-for="Password" class="text-danger"></span>
         </div>
+        <div class="float-end">
+            <a asp-action="ForgotPassword" asp-controller="Account" class="text-decoration-none">Forgot password?</a>
+        </div>
         <div class="form-check mb-3">
             <label>
                 <input asp-for="RememberMe" type="checkbox" class="form-check-input" />
