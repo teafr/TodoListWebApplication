@@ -51,7 +51,6 @@ public class AccountController : Controller
                         SameSite = SameSiteMode.Lax,
                         Expires = loginUser.RememberMe ? DateTimeOffset.UtcNow.AddDays(7) : DateTimeOffset.UtcNow.AddHours(1),
                     });
-                    await this.emailSender.SendEmailAsync(user.Email, "Login", $"Hi, {user.UserName}! You successfully logged in.");
 
                     return this.Redirect("/");
                 }
@@ -90,58 +89,65 @@ public class AccountController : Controller
 
         if (this.ModelState.IsValid)
         {
-            if (await this.userManager.FindByEmailAsync(registerUser.Email) is not null)
+            if (await this.userManager.FindByEmailAsync(registerUser.Email) is null)
             {
-                this.ModelState.AddModelError(string.Empty, "User with such email already exists.");
-                return this.View(registerUser);
-            }
+                IdentityUser user = new IdentityUser
+                {
+                    UserName = registerUser.Username,
+                    Email = registerUser.Email,
+                };
 
-            IdentityUser user = new IdentityUser
-            {
-                UserName = registerUser.Username,
-                Email = registerUser.Email,
-            };
-
-            var result = await this.userManager.CreateAsync(user, registerUser.Password);
-            if (result.Succeeded)
-            {
-                await this.emailSender.SendEmailAsync(user.Email, "Registration", $"Hi, {user.UserName}!\nYou successfully registered in To-do List web application.");
-                return this.RedirectToAction("Login");
+                var result = await this.userManager.CreateAsync(user, registerUser.Password);
+                if (result.Succeeded)
+                {
+                    string token = await this.userManager.GenerateEmailConfirmationTokenAsync(user);
+                    await this.emailSender.SendEmailAsync(user.Email, "Registration", $"Hi, {user.UserName}!\nYou successfully registered in To-do List web application. Verify your email by link: {this.GetUri(token, registerUser.Email, action: "VerifyEmail")}");
+                    return this.RedirectToAction("Login");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                    {
+                        this.ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
             }
             else
             {
-                foreach (var error in result.Errors)
-                {
-                    this.ModelState.AddModelError(string.Empty, error.Description);
-                }
+                this.ModelState.AddModelError(string.Empty, "User with such email already exists.");
+                return this.View(registerUser);
             }
         }
 
         return this.View(registerUser);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> VerifyEmail(CheckEmailViewModel verifyEmailModel)
+    [AllowAnonymous]
+    public async Task<IActionResult> VerifyEmail(string token, string email)
     {
-        if (this.ModelState.IsValid && verifyEmailModel is not null)
+        if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(email))
         {
-            IdentityUser user = await this.userManager.FindByEmailAsync(verifyEmailModel.Email);
+            IdentityUser user = await this.userManager.FindByEmailAsync(email);
 
             if (user is not null)
             {
-                var token = this.userManager.GenerateEmailConfirmationTokenAsync(user);
+                var result = await this.userManager.ConfirmEmailAsync(user, token);
+
+                if (result.Succeeded)
+                {
+                    return this.RedirectToAction("Message", new { message = $"Email {email} was succesfuly verified!" });
+                }
             }
         }
 
-        return this.View();
+        return this.View("Error", new ErrorViewModel { RequestId = $"Email or token isn't valid, so email wasn't verified." });
     }
 
     [AllowAnonymous]
     [HttpGet]
     public IActionResult ForgotPassword()
     {
-        string url = $"{this.Request.Scheme}://{this.Request.Host}/Account/ChangePassword";
-        return this.View(new CheckEmailViewModel { ClientUri = url });
+        return this.View();
     }
 
     [AllowAnonymous]
@@ -156,15 +162,8 @@ public class AccountController : Controller
             if (user is not null)
             {
                 var token = await this.userManager.GeneratePasswordResetTokenAsync(user);
-                var queryParameters = new Dictionary<string, string>()
-                {
-                    { "token", token },
-                    { "email", checkEmailModel.Email },
-                };
-
-                var resetPasswordUrl = QueryHelpers.AddQueryString(checkEmailModel.ClientUri, queryParameters!);
-                await this.emailSender.SendEmailAsync(checkEmailModel.Email, "Reset Password", $"Hi, {user.UserName}!\nYou requested to reset your password. Please click the link below to reset it:\n{resetPasswordUrl}");
-                return this.RedirectToAction("Message", new { message = $"Message was succesfuly sent on email {checkEmailModel.Email}! You can use generated link during 2 hours." });
+                await this.emailSender.SendEmailAsync(user.Email, "Reset Password", $"Hi, {user.UserName}!\nYou requested to reset your password. Please click the link below to reset it:\n{this.GetUri(token, user.Email, action: "ChangePassword")}");
+                return this.RedirectToAction("Message", new { message = $"Message was succesfuly sent on email {user.Email}! You can use generated link during 2 hours." });
             }
         }
 
@@ -174,12 +173,12 @@ public class AccountController : Controller
     [AllowAnonymous]
     public IActionResult Message(string message)
     {
-        if (string.IsNullOrEmpty(message))
+        if (!string.IsNullOrEmpty(message))
         {
-            return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+            return this.View("Message", message);
         }
 
-        return this.View("Message", message);
+        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
     }
 
     [AllowAnonymous]
@@ -188,7 +187,7 @@ public class AccountController : Controller
     {
         if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(email))
         {
-            return this.BadRequest("Invalid token or email.");
+            return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
         }
 
         return this.View(new ChangePasswordViewModel
@@ -228,5 +227,16 @@ public class AccountController : Controller
         }
 
         return this.View(changePasswordModel);
+    }
+
+    public Uri GetUri(string token, string email, string action)
+    {
+        var queryParameters = new Dictionary<string, string>()
+        {
+            { "token", token },
+            { "email",  email },
+        };
+
+        return new Uri(QueryHelpers.AddQueryString($"{this.Request.Scheme}://{this.Request.Host}/Account/{action}", queryParameters!));
     }
 }
