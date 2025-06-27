@@ -26,29 +26,33 @@ public class TodoListWebApiService : ITodoListWebApiService
         return todoList is null ? null : new TodoListModel(todoList);
     }
 
-    public async Task<List<TaskModel>> GetTasksByTodoListIdAsync(int todoListId)
-    {
-        List<TaskApiModel>? tasks = await this.todoListApiClient.GetTasksByTodoListIdAsync(todoListId);
-        return tasks?.Select(task => new TaskModel(task)).ToList() ?? new List<TaskModel>();
-    }
-
-    public async System.Threading.Tasks.Task CreateTodoListAsync(TodoListModel todoList)
+    public async Task CreateTodoListAsync(TodoListModel todoList)
     {
         await this.todoListApiClient.CreateTodoListAsync(todoList.ToTodoListApiModel());
     }
 
-    public async System.Threading.Tasks.Task UpdateTodoListAsync(TodoListModel todoList)
+    public async Task AddEditorAsync(int todoListId, string editorId)
+    {
+        await this.todoListApiClient.AddEditorAsync(todoListId, editorId);
+    }
+
+    public async Task UpdateTodoListAsync(TodoListModel todoList)
     {
         await this.todoListApiClient.UpdateTodoListAsync(todoList.ToTodoListApiModel());
     }
 
-    public async System.Threading.Tasks.Task DeleteTodoListAsync(int todoListId)
+    public async Task DeleteTodoListAsync(int todoListId)
     {
         await this.todoListApiClient.DeleteTodoListAsync(todoListId);
     }
 
-    public async System.Threading.Tasks.Task DeleteListsByUserIdAsync(string userId)
+    public async Task DeleteListsByUserIdAsync(string userId)
     {
         await this.todoListApiClient.DeleteLodoListsByUserId(userId);
+    }
+
+    public async Task RemoveEditorAsync(int todoListId, string editorId)
+    {
+        await this.todoListApiClient.RemoveEditorAsync(todoListId, editorId);
     }
 }

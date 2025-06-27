@@ -16,6 +16,7 @@ public static class ModelsExtension
             Title = todoList.Title,
             Description = todoList.Description,
             OwnerId = todoList.OwnerId,
+            Editors = todoList.Editors ?? new List<string>(),
             Tasks = new List<TaskApiModel>(),
         };
 
@@ -70,6 +71,7 @@ public static class ModelsExtension
             Title = todoList.Title,
             Description = todoList.Description,
             OwnerId = todoList.OwnerId,
+            Editors = JsonSerializer.Serialize(todoList.Editors ?? new List<string>()),
             Tasks = new List<TaskEntity>(),
         };
 

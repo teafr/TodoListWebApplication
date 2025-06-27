@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApi.Models;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models;
@@ -17,6 +18,7 @@ public static class ModelsExtension
             Title = todoList.Title,
             Description = todoList.Description,
             OwnerId = todoList.OwnerId,
+            Editors = todoList.Editors ?? new List<string>(),
             Tasks = todoList.Tasks?.Select(task => task.ToTaskApiModel()).ToList() ?? new List<TaskApiModel>(),
         };
     }
@@ -49,15 +51,18 @@ public static class ModelsExtension
         };
     }
 
-    public static TodoListViewModel ToTodoListViewModel(this TodoListModel todoList, int currentPage = 1)
+    public static TodoListViewModel ToTodoListViewModel(this TodoListModel todoList, [FromServices] UserManager<IdentityUser> userManager, int currentPage = 1)
     {
         ExceptionHelper.CheckObjectForNull(todoList);
+        ExceptionHelper.CheckObjectForNull(userManager);
+
         return new TodoListViewModel
         {
             Id = todoList.Id,
             Title = todoList.Title,
             Description = todoList.Description,
-            OwnerId = todoList.OwnerId,
+            Owner = userManager.FindByIdAsync(todoList.OwnerId).Result,
+            Editors = todoList.Editors?.Select(editorId => userManager.FindByIdAsync(editorId).Result).ToList() ?? new List<IdentityUser>(),
             TasksList = new ListOfTasks(todoList.Tasks ?? new List<TaskModel>(), currentPage),
         };
     }

@@ -5,15 +5,17 @@ public interface ITodoListWebApiService
 {
     Task<TodoListModel?> GetTodoListByIdAsync(int id);
 
-    Task<List<TaskModel>> GetTasksByTodoListIdAsync(int todoListId);
-
     Task<List<TodoListModel>> GetTodoListsByUserIdAsync(string userId);
 
-    System.Threading.Tasks.Task CreateTodoListAsync(TodoListModel todoList);
+    Task CreateTodoListAsync(TodoListModel todoList);
 
-    System.Threading.Tasks.Task UpdateTodoListAsync(TodoListModel todoList);
+    Task AddEditorAsync(int todoListId, string editorId);
 
-    System.Threading.Tasks.Task DeleteListsByUserIdAsync(string userId);
+    Task UpdateTodoListAsync(TodoListModel todoList);
 
-    System.Threading.Tasks.Task DeleteTodoListAsync(int todoListId);
+    Task DeleteListsByUserIdAsync(string userId);
+
+    Task DeleteTodoListAsync(int todoListId);
+
+    Task RemoveEditorAsync(int todoListId, string editorId);
 }

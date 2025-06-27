@@ -41,14 +41,14 @@ public class TodoListApiClientService : IDisposable
         return await JsonSerializer.DeserializeAsync<TodoListApiModel>(stream, this.options);
     }
 
-    public async Task<List<TaskApiModel>?> GetTasksByTodoListIdAsync(int todoListId)
-    {
-        return await this.httpClient.GetFromJsonAsync<List<TaskApiModel>>(this.url + $"{todoListId}/tasks");
-    }
-
     public async Task CreateTodoListAsync(TodoListApiModel todoList)
     {
         _ = await this.httpClient.PostAsJsonAsync(this.url, todoList);
+    }
+
+    public async Task AddEditorAsync(int todoListId, string userId)
+    {
+        _ = await this.httpClient.PostAsJsonAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}/editors"), userId);
     }
 
     public async Task UpdateTodoListAsync(TodoListApiModel todoList)
@@ -64,6 +64,11 @@ public class TodoListApiClientService : IDisposable
     public async Task DeleteLodoListsByUserId(string userId)
     {
         _ = await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"user/{userId}"));
+    }
+
+    public async Task RemoveEditorAsync(int todoListId, string userId)
+    {
+        _ = await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}/editors/{userId}"));
     }
 
     public void Dispose()

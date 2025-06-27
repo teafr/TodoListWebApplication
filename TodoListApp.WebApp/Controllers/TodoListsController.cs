@@ -36,7 +36,7 @@ public class TodoListsController : Controller
                 return this.NotFound();
             }
 
-            return this.View(todoList.ToTodoListViewModel(currentPage));
+            return this.View(todoList.ToTodoListViewModel(this.userManager, currentPage));
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -44,7 +44,7 @@ public class TodoListsController : Controller
 
     public async Task<IActionResult> Create()
     {
-        return this.View(new TodoListViewModel() { OwnerId = (await this.userManager.GetUserAsync(this.User)).Id });
+        return this.View(new TodoListViewModel() { Owner = await this.userManager.GetUserAsync(this.User) });
     }
 
     [HttpPost]
@@ -54,6 +54,23 @@ public class TodoListsController : Controller
         {
             await this.apiService.CreateTodoListAsync(new TodoListModel(todoListViewModel));
             return this.RedirectToAction("Index");
+        }
+
+        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+    }
+
+    public async Task<IActionResult> AddEditor(int todoListId, string editorId)
+    {
+        if (this.ModelState.IsValid)
+        {
+            var todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
+            if (todoList is null)
+            {
+                return this.NotFound();
+            }
+
+            await this.apiService.AddEditorAsync(todoListId, editorId);
+            return this.RedirectToAction("GetTasks", new { todoListId });
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -69,7 +86,7 @@ public class TodoListsController : Controller
                 return this.NotFound();
             }
 
-            return this.View(todoList.ToTodoListViewModel() ?? new TodoListViewModel());
+            return this.View(todoList.ToTodoListViewModel(this.userManager) ?? new TodoListViewModel());
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -99,6 +116,23 @@ public class TodoListsController : Controller
 
             await this.apiService.DeleteTodoListAsync(todoListId);
             return this.RedirectToAction("Index");
+        }
+
+        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+    }
+
+    public async Task<IActionResult> RemoveEditor(int todoListId, string editorId)
+    {
+        if (this.ModelState.IsValid)
+        {
+            var todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
+            if (todoList is null)
+            {
+                return this.NotFound();
+            }
+
+            await this.apiService.RemoveEditorAsync(todoListId, editorId);
+            return this.RedirectToAction("GetTasks", new { todoListId });
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });

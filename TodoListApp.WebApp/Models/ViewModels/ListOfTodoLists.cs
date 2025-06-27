@@ -1,12 +1,13 @@
+using Microsoft.AspNetCore.Identity;
 using TodoListApp.WebApp.Extensions;
 
 namespace TodoListApp.WebApp.Models.ViewModels;
 
 public class ListOfTodoLists
 {
-    public ListOfTodoLists(IEnumerable<TodoListModel> todoLists)
+    public ListOfTodoLists(IEnumerable<TodoListModel> todoLists, UserManager<IdentityUser> userManager)
     {
-        this.TodoLists = todoLists.Select(todoList => todoList.ToTodoListViewModel()).ToList();
+        this.TodoLists = todoLists.Select(todoList => todoList.ToTodoListViewModel(userManager)).ToList();
 
         this.PaginationInfo = new PaginationInfo()
         {

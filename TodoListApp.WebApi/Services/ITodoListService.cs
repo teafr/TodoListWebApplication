@@ -4,8 +4,6 @@ namespace TodoListApp.WebApi.Services;
 
 public interface ITodoListService
 {
-    Task<List<Models.Task>> GetTasksByTodoListIdAsync(int todoListId);
-
     Task<TodoList?> GetTodoListByIdAsync(int id);
 
     Task<List<TodoList>> GetTodoListsAsync();
@@ -15,6 +13,8 @@ public interface ITodoListService
     Task<TodoList> CreateTodoListAsync(TodoList newTodoList);
 
     System.Threading.Tasks.Task UpdateTodoListAsync(TodoList todoList);
+
+    System.Threading.Tasks.Task UpdateEditors(int todoListId, ICollection<string> editors);
 
     System.Threading.Tasks.Task DeleteTodoListByIdAsync(int id);
 

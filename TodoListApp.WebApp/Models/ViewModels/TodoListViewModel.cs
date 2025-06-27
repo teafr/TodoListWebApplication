@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace TodoListApp.WebApp.Models.ViewModels;
 
@@ -13,7 +14,9 @@ public class TodoListViewModel
     [StringLength(150, MinimumLength = 2, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
     public string? Description { get; set; }
 
-    public string? OwnerId { get; set; }
+    public IdentityUser? Owner { get; set; }
+
+    public ICollection<IdentityUser> Editors { get; init; } = new List<IdentityUser>();
 
     public bool CurrentlyPicked { get; set; }
 

@@ -3,6 +3,7 @@
 @{
     ViewBag.Title = @Model.Title + " Tasks";
     Layout = "~/Views/Shared/_TodoListLayout.cshtml";
+    string? searchQuery = Context.Request.Query["searchQuery"];
 }
 
 <h2>@Model.Title Tasks</h2>
@@ -10,10 +11,17 @@
 
 @await Html.PartialAsync("_TasksPartial", Model.TasksList)
 
+<a asp-action="AddTask" asp-controller="Tasks" asp-route-todoListId="@Model.Id" class="btn btn-secondary w-100">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2" />
+    </svg>
+    Add task
+</a>
+
 @if (Model.TasksList is not null)
 {
     <nav aria-label="Page navigation example">
-        <ul class="pagination justify-content-center align-items-center m-0 mt-2">
+        <ul class="pagination justify-content-center align-items-center m-0 mt-3">
             <li class="page-item">
                 <a class="page-link text-secondary" href="@Url.Action("GetTasks", "TodoLists", new { todoListId = Model.Id, currentPage = Model.TasksList.PaginationInfo.CurrentPage - 1 })" aria-label="Previous">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-left-fill" viewBox="0 0 16 16">
@@ -39,4 +47,46 @@
     </nav>
 }
 
-<a asp-action="AddTask" asp-controller="Tasks" asp-route-todoListId="@Model.Id" class="btn btn-secondary">Add task</a>
+<h5>Owner: <span class="text-secondary">@Model.Owner?.UserName</span></h5>
+<h5>Editors:</h5>
+@if (Model.Editors is not null && Model.Editors.Any())
+{
+    <ul class="list-group mb-3">
+        @foreach (var editor in Model.Editors)
+        {
+            <li class="list-group-item d-flex justify-content-between align-items-center text-secondary">
+                <span>@editor.UserName</span>
+                <form asp-action="RemoveEditor" asp-controller="TodoLists" method="post" class="mb-0">
+                    <input type="hidden" name="todoListId" value="@Model.Id" />
+                    <input type="hidden" name="editorId" value="@editor.Id" />
+                    <button type="submit" class="btn btn-danger btn-sm">Remove</button>
+                </form>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p class="text-secondary">No editors added yet.</p>
+}
+
+<button class="btn btn-outline-primary mb-2" onclick="toggleForm('addEditorForm')">Add editor</button>
+
+<form asp-action="GetTasks" asp-controller="TodoLists" id="addEditorForm" method="get" class="input-group-sm @(string.IsNullOrEmpty(searchQuery) ? "d-none" : "")">
+    <input type="hidden" name="todoListId" value="@Model.Id" />
+    <div class="d-flex w-100">
+        <input type="text" name="searchQuery" class="form-control" value="@searchQuery" placeholder="Type to search user..." aria-label="Search editor">
+        <button class="btn text-secondary" type="submit">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16">
+                <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
+            </svg>
+        </button>
+    </div>
+</form>
+
+@if (!string.IsNullOrEmpty(searchQuery))
+{
+    <div class="mt-1">
+        @await Component.InvokeAsync("SearchEditors", new { todoListId = Model.Id, searchQuery = searchQuery })
+    </div>
+}

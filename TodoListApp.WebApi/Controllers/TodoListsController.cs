@@ -74,30 +74,6 @@ public class TodoListsController : BaseController
     }
 
     /// <summary>
-    /// Get all tasks from to-do list by id.
-    /// </summary>
-    /// <param name="todoListId">Id of to-do list.</param>
-    /// <returns>Tasks from to-do list.</returns>
-    [HttpGet("{todoListId:int}/tasks")]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> GetTasks(int todoListId)
-    {
-        TodoList? todoList = await this.todoListService.GetTodoListByIdAsync(todoListId);
-        if (todoList is null)
-        {
-            return this.NotFound();
-        }
-
-        List<Models.Task> tasks = await this.todoListService.GetTasksByTodoListIdAsync(todoListId);
-        Log.Debug("Successfully have got all tasks from to-do list by id {0}.", todoListId);
-        return this.Ok(tasks.Select(task => task.ToTaskApiModel()));
-    }
-
-    /// <summary>
     /// Create new to-do list.
     /// </summary>
     /// <param name="newTodoList">To-do list model.</param>
@@ -113,6 +89,26 @@ public class TodoListsController : BaseController
     {
         TodoList createdTodoList = await this.todoListService.CreateTodoListAsync(new TodoList(newTodoList));
         return this.CreatedAtAction(nameof(this.Create), createdTodoList.ToTodoListApiModel());
+    }
+
+    [HttpPost("{todoListId:int}/editors")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> AddEditor(int todoListId, [FromBody] string editorId)
+    {
+        TodoList? todoList = await this.todoListService.GetTodoListByIdAsync(todoListId);
+        if (todoList is null)
+        {
+            return this.NotFound();
+        }
+
+        todoList.Editors!.Add(editorId);
+        return await this.ExecuteWithValidation(() => this.todoListService.UpdateEditors(todoListId, todoList.Editors));
     }
 
     /// <summary>
@@ -181,6 +177,31 @@ public class TodoListsController : BaseController
     public async Task<IActionResult> DeleteTodoListsByUserId(string userId)
     {
         return await this.ExecuteWithValidation(() => this.todoListService.DeleteTodoListsByUserIdAsync(userId));
+    }
+
+    [HttpDelete("{todoListId:int}/editors/{editorId}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [Produces(MediaTypeNames.Application.Json)]
+    public async Task<IActionResult> RemoveEditor(int todoListId, string editorId)
+    {
+        TodoList? todoList = await this.todoListService.GetTodoListByIdAsync(todoListId);
+        if (todoList is null)
+        {
+            return this.NotFound();
+        }
+
+        if (!todoList.Editors!.Remove(editorId))
+        {
+            Log.Warning("Editor with id {0} was not found in to-do list with id {1}.", editorId, todoListId);
+            return this.BadRequest("Such editor doesn't exist in this to-do list.");
+        }
+
+        return await this.ExecuteWithValidation(() => this.todoListService.UpdateEditors(todoListId, todoList.Editors));
     }
 
     public override NotFoundResult NotFound()

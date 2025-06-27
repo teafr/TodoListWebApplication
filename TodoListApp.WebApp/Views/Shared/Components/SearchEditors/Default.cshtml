@@ -1,0 +1,10 @@
+@model (List<IdentityUser> users, int todoListId)
+
+<div class="list-group">
+    @foreach (var user in Model.users)
+    {
+        <a asp-action="AddEditor" asp-controller="TodoLists" asp-route-todoListId="@Model.todoListId" asp-route-editorId="@user.Id" class="list-group-item list-group-item-action">
+            @user.UserName
+        </a>
+    }
+</div>

@@ -6,13 +6,16 @@ namespace TodoListApp.WebApi.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required, StringLength(30, MinimumLength = 2)]
         public string Title { get; set; } = string.Empty;
 
+        [StringLength(100, MinimumLength = 2)]
         public string? Description { get; set; }
 
-        [Required]
+        [Required, StringLength(40, MinimumLength = 1)]
         public string OwnerId { get; set; } = string.Empty;
+
+        public ICollection<string>? Editors { get; init; }
 
         public ICollection<TaskApiModel>? Tasks { get; init; } = new List<TaskApiModel>();
     }

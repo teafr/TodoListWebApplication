@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Extensions;
 
 namespace TodoListApp.WebApp;
@@ -8,7 +9,7 @@ internal static class Program
     {
         var builder = WebApplication.CreateBuilder(args);
 
-        _ = builder.Services.AddControllersWithViews();
+        _ = builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
         _ = builder.Services.ConfigureIdentity().ConfigureServices(builder.Configuration).AddDependencies();
 
         var app = builder.Build();

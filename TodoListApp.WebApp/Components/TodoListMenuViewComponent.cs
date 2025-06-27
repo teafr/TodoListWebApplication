@@ -24,7 +24,7 @@ public class TodoListMenuViewComponent : ViewComponent
         var userId = this.userManager.GetUserId(this.UserClaimsPrincipal);
         var todoLists = await this.todoListWebApiService.GetTodoListsByUserIdAsync(userId);
 
-        ListOfTodoLists listOfTodoLists = new ListOfTodoLists(todoLists ?? new List<TodoListModel>());
+        ListOfTodoLists listOfTodoLists = new ListOfTodoLists(todoLists ?? new List<TodoListModel>(), this.userManager);
         listOfTodoLists.TodoLists.ToList().ForEach(todoList => todoList.CurrentlyPicked = selectedTodoListId.HasValue && todoList.Id == selectedTodoListId);
 
         return this.View(listOfTodoLists);

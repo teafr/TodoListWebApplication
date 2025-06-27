@@ -6,12 +6,13 @@ namespace TodoListApp.WebApi.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required, StringLength(30, MinimumLength = 2)]
         public string Title { get; set; } = string.Empty;
 
+        [StringLength(100, MinimumLength = 2)]
         public string? Description { get; set; }
 
-        [Required]
+        [Required, StringLength(40, MinimumLength = 1)]
         public string AssigneeId { get; set; } = string.Empty;
 
         [Required]

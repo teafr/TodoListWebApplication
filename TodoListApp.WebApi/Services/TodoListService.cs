@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Text.Json;
 using Serilog;
 using TodoListApp.Database.Entities;
 using TodoListApp.Database.Repositories;
@@ -28,7 +30,9 @@ public class TodoListService : ITodoListService
         Log.Debug("Try to get user's to-do lists.");
 
         var todoLists = await this.todoListRepository.GetAsync();
-        return todoLists?.Where(list => list.OwnerId == userId).Select(list => new TodoList(list))?.ToList() ?? new List<TodoList>();
+        return todoLists?.Where(list => list.OwnerId == userId || (JsonSerializer.Deserialize<List<string>>(list.Editors ?? string.Empty)?
+                         .Any(editorId => editorId == userId) ?? false))
+                         .Select(list => new TodoList(list)).ToList() ?? new List<TodoList>();
     }
 
     public async Task<TodoList?> GetTodoListByIdAsync(int id)
@@ -74,6 +78,24 @@ public class TodoListService : ITodoListService
         }
     }
 
+    public async System.Threading.Tasks.Task UpdateEditors(int todoListId, ICollection<string> editors)
+    {
+        ArgumentNullException.ThrowIfNull(editors);
+        Log.Debug("Try to update editors of to-do list by id {0}.", todoListId);
+
+        TodoListEntity? existingList = await this.todoListRepository.GetByIdAsync(todoListId);
+        if (existingList is not null)
+        {
+            existingList.Editors = JsonSerializer.Serialize(editors);
+            this.todoListRepository.Update(existingList);
+            Log.Information("Editors of to-do list by id {0} was updated.", todoListId);
+        }
+        else
+        {
+            ThrowIfTodoListNotFound(todoListId);
+        }
+    }
+
     public async System.Threading.Tasks.Task DeleteTodoListByIdAsync(int id)
     {
         Log.Debug("Try to delete to-do list.");
@@ -90,7 +112,7 @@ public class TodoListService : ITodoListService
         }
     }
 
-    public async System.Threading.Tasks.Task DeleteTodoListsByUserIdAsync(string userId)
+    public async System.Threading.Tasks.Task DeleteTodoListsByUserIdAsync(string userId) //???????????? delete from editrs
     {
         Log.Debug("Try to delete to-do lists of user by id {0}.", userId);
 
@@ -102,22 +124,6 @@ public class TodoListService : ITodoListService
         }
 
         Log.Debug("All to-do lists of user by id {0} was deleted.", userId);
-    }
-
-    public async Task<List<Models.Task>> GetTasksByTodoListIdAsync(int todoListId)
-    {
-        Log.Debug("Try to get tasks by to-do list id {0}.", todoListId);
-
-        TodoListEntity? todoList = await this.todoListRepository.GetByIdAsync(todoListId);
-        if (todoList is not null)
-        {
-            return todoList.Tasks.Select(task => new Models.Task(task)).ToList() ?? new List<Models.Task>();
-        }
-        else
-        {
-            ThrowIfTodoListNotFound(todoListId);
-            return new List<Models.Task>();
-        }
     }
 
     private static void ThrowIfTodoListNotFound(int todoListId)
