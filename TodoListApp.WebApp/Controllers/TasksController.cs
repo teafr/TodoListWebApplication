@@ -149,7 +149,7 @@ public class TasksController : Controller
             return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = taskViewModel.TodoListId });
         }
 
-        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+        return this.View(new TaskViewModel() { TodoListId = taskViewModel.TodoListId });
     }
 
     [HttpPost]
