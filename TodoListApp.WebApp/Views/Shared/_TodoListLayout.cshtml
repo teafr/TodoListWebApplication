@@ -9,3 +9,9 @@
 <main role="main" class="col-9">
     @RenderBody()
 </main>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

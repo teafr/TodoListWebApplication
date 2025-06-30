@@ -36,7 +36,7 @@ public class TasksController : Controller
         var userId = this.userManager.GetUserId(this.User);
         if (userId is null)
         {
-            return this.View(new ListOfTasks(new List<TaskModel>(), filter.CurrentPage, 7));
+            return this.View(new ListOfTasks(new List<TaskModel>(), filter.CurrentPage));
         }
 
         List<TaskModel>? tasks = await this.apiService.GetTasksByUserIdAsync(userId);
@@ -63,7 +63,7 @@ public class TasksController : Controller
             _ => tasks
         };
 
-        return this.View(new ListOfTasks(tasks ?? new List<TaskModel>(), filter.CurrentPage, 7));
+        return this.View(new ListOfTasks(tasks ?? new List<TaskModel>(), filter.CurrentPage));
     }
 
     public async Task<IActionResult> Details(int taskId)

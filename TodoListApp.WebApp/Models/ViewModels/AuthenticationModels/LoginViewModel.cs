@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace TodoListApp.WebApp.Models.ViewModels;
+namespace TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 public class LoginViewModel
 {

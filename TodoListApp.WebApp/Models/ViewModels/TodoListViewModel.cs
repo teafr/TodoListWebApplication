@@ -16,7 +16,7 @@ public class TodoListViewModel
 
     public IdentityUser? Owner { get; set; }
 
-    public ICollection<IdentityUser> Editors { get; init; } = new List<IdentityUser>();
+    public ICollection<IdentityUser>? Editors { get; init; } = new List<IdentityUser>();
 
     public bool CurrentlyPicked { get; set; }
 

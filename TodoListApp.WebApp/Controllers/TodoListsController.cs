@@ -56,7 +56,7 @@ public class TodoListsController : Controller
             return this.RedirectToAction("Index");
         }
 
-        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+        return this.View();
     }
 
     public async Task<IActionResult> AddEditor(int todoListId, string editorId)

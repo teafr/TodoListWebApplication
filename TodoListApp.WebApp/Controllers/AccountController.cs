@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models.ViewModels;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Controllers;
 
