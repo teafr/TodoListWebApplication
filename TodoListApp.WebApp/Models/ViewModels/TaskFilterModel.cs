@@ -9,4 +9,6 @@ public class TaskFilterModel
     public int StatusId { get; set; }
 
     public int CurrentPage { get; set; } = 1;
+
+    public bool ShowCompletedTasks { get; set; }
 }

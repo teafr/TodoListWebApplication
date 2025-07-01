@@ -6,6 +6,8 @@
     string? currentSortBy = currentQuery["sortBy"];
     string? currentStatusId = currentQuery["statusId"];
     string? currentPage = currentQuery["currentPage"];
+    string? currentTag = currentQuery["tag"];
+    bool showCompleted = string.Equals(currentQuery["showCompletedTasks"], "true", StringComparison.OrdinalIgnoreCase);
 }
 
 <div class="bg-secondary p-2 rounded-1">
@@ -19,41 +21,45 @@
         <div class="mb-2">
             <div class="dropdown w-100 mb-2">
                 <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center" type="button" id="status-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span>Filter by status</span>
+                    @if(string.IsNullOrEmpty(currentStatusId) || currentStatusId == "0")
+                    {
+                        <span>Filter by status</span>
+                    }
+                    else
+                    {
+                        <span>@((StatusOfTask)Enum.Parse(typeof(StatusOfTask), currentStatusId))</span>
+                    }
+
                     <span class="dropdown-toggle ms-2"></span>
                 </button>
 
                 <ul class="dropdown-menu w-100" aria-labelledby="status-dropdown">
                     <li>
-                        <a asp-action="Index" asp-controller="Tasks"
-                           asp-route-statusId="@((int)StatusOfTask.NotStarted)"
-                           asp-route-sortBy="@currentSortBy"
-                           asp-route-tag="@currentQuery["tag"]"
-                           asp-route-currentPage="1"
-                           class="dropdown-item">Not Started</a>
+                        <a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.NotStarted)"
+                           asp-route-sortBy="@currentSortBy" asp-route-tag="@currentTag" asp-route-showCompletedTasks="@showCompleted" class="dropdown-item">Not Started</a>
                     </li>
                     <li>
-                        <a asp-action="Index" asp-controller="Tasks"
-                           asp-route-statusId="@((int)StatusOfTask.InProgress)"
-                           asp-route-sortBy="@currentSortBy"
-                           asp-route-tag="@currentQuery["tag"]"
-                           asp-route-currentPage="1"
-                           class="dropdown-item">In Progress</a>
+                        <a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.InProgress)"
+                           asp-route-sortBy="@currentSortBy" asp-route-tag="@currentTag" asp-route-showCompletedTasks="@showCompleted" class="dropdown-item">In Progress</a>
                     </li>
                     <li>
-                        <a asp-action="Index" asp-controller="Tasks"
-                           asp-route-statusId="@((int)StatusOfTask.Completed)"
-                           asp-route-sortBy="@currentSortBy"
-                           asp-route-tag="@currentQuery["tag"]"
-                           asp-route-currentPage="1"
-                           class="dropdown-item">Completed</a>
+                        <a asp-action="Index" asp-controller="Tasks" asp-route-statusId="@((int)StatusOfTask.Completed)"
+                           asp-route-sortBy="@currentSortBy" asp-route-tag="@currentTag" asp-route-showCompletedTasks="@showCompleted" class="dropdown-item">Completed</a>
                     </li>
                 </ul>
             </div>
 
             <div class="dropdown w-100 mb-2">
                 <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center" type="button" id="tag-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span>Filter by tag</span>
+                    @if(string.IsNullOrEmpty(currentTag))
+                    {
+                        <span>Filter by tag</span>
+                    }
+                    else
+                    {
+                        <span>@currentTag</span>
+                    }
+
                     <span class="dropdown-toggle ms-2"></span>
                 </button>
 
@@ -61,49 +67,51 @@
                     @foreach (var tag in Model)
                     {
                         <li>
-                            <a asp-action="Index" asp-controller="Tasks"
-                               asp-route-tag="@tag"
-                               asp-route-sortBy="@currentSortBy"
-                               asp-route-statusId="@currentStatusId"
-                               asp-route-currentPage="1"
-                               class="dropdown-item">@tag</a>
+                            <a asp-action="Index" asp-controller="Tasks" asp-route-tag="@tag" asp-route-sortBy="@currentSortBy"
+                               asp-route-statusId="@currentStatusId" asp-route-showCompletedTasks="@showCompleted" class="dropdown-item">@tag</a>
                         </li>
                     }
                 </ul>
             </div>
 
-            <div class="dropdown w-100">
+            <div class="dropdown mb-2 w-100">
                 <button class="btn btn-light w-100 text-start d-flex justify-content-between align-items-center" type="button" id="sort-dropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span>Sort by</span>
+                    @if(string.IsNullOrEmpty(currentSortBy))
+                    {
+                        <span>Sort by</span>
+                    }
+                    else
+                    {
+                        <span>@currentSortBy</span>
+                    }
+
                     <span class="dropdown-toggle ms-2"></span>
                 </button>
 
                 <ul class="dropdown-menu w-100" aria-labelledby="sort-dropdown">
                     <li>
-                        <a asp-action="Index" asp-controller="Tasks"
-                           asp-route-sortBy="@TaskProperty.Title.ToString()"
-                           asp-route-statusId="@currentStatusId"
-                           asp-route-tag="@currentQuery["tag"]"
-                           asp-route-currentPage="1"
+                        <a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.Title.ToString()"
+                           asp-route-statusId="@currentStatusId" asp-route-tag="@currentTag" asp-route-showCompletedTasks="@showCompleted"
                            class="dropdown-item">Title</a>
                     </li>
                     <li>
-                        <a asp-action="Index" asp-controller="Tasks"
-                           asp-route-sortBy="@TaskProperty.DueDate.ToString()"
-                           asp-route-statusId="@currentStatusId"
-                           asp-route-tag="@currentQuery["tag"]"
-                           asp-route-currentPage="1"
+                        <a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.DueDate.ToString()"
+                           asp-route-statusId="@currentStatusId" asp-route-tag="@currentTag" asp-route-showCompletedTasks="@showCompleted"
                            class="dropdown-item">Due Date</a>
                     </li>
                     <li>
-                        <a asp-action="Index" asp-controller="Tasks"
-                           asp-route-sortBy="@TaskProperty.CreationDate.ToString()"
-                           asp-route-statusId="@currentStatusId"
-                           asp-route-tag="@currentQuery["tag"]"
-                           asp-route-currentPage="1"
+                        <a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@TaskProperty.CreationDate.ToString()"
+                           asp-route-statusId="@currentStatusId" asp-route-tag="@currentTag" asp-route-showCompletedTasks="@showCompleted"
                            class="dropdown-item">Creation Date</a>
                     </li>
                 </ul>
+            </div>
+
+            <div class="w-100">
+               <a asp-action="Index" asp-controller="Tasks" asp-route-sortBy="@currentSortBy" asp-route-statusId="@currentStatusId"
+                   asp-route-tag="@currentTag" asp-route-showCompletedTasks="@(!showCompleted)" class="btn btn-outline-light w-100">
+                    @(showCompleted ? "Hide completed tasks" : "Show completed tasks")
+               </a>
             </div>
         </div>
     }

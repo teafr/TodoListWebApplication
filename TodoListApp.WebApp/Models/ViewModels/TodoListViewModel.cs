@@ -21,5 +21,5 @@ public class TodoListViewModel
 
     public bool CurrentlyPicked { get; set; }
 
-    public ListOfTasks? TasksList { get; set; }
+    public TodoListTasks? TasksList { get; set; }
 }

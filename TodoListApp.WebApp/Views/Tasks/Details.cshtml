@@ -48,11 +48,11 @@
             <span class="float-end">
                 @if (Model.Status.Id == (int)StatusOfTask.NotStarted)
                 {
-                    <a asp-action="StartTask" asp-controller="Tasks" asp-route-taskId="@Model.Id" class="btn btn-outline-primary">Start</a>
+                    <a asp-action="ChangeStatus" asp-controller="Tasks" asp-route-taskId="@Model.Id" asp-route-statusId="@((int)StatusOfTask.InProgress)" class="btn btn-outline-primary">Start</a>
                 }
                 else if (Model.Status.Id == (int)StatusOfTask.InProgress)
                 {
-                    <a asp-action="CompleteTask" asp-controller="Tasks" asp-route-taskId="@Model.Id" class="btn btn-outline-success">Complete</a>
+                    <a asp-action="ChangeStatus" asp-controller="Tasks" asp-route-taskId="@Model.Id" asp-route-statusId="@((int)StatusOfTask.Completed)" class="btn btn-outline-success">Complete</a>
                 }
             </span>
         </td>
