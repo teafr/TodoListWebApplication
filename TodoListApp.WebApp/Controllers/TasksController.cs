@@ -7,6 +7,7 @@ using TodoListApp.WebApp.Extensions;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Models.ViewModels;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Controllers;
@@ -15,9 +16,9 @@ namespace TodoListApp.WebApp.Controllers;
 public class TasksController : Controller
 {
     private readonly ITaskWebApiService apiService;
-    private readonly UserManager<IdentityUser> userManager;
+    private readonly UserManager<ApplicationUser> userManager;
 
-    public TasksController(ITaskWebApiService apiService, UserManager<IdentityUser> userManager)
+    public TasksController(ITaskWebApiService apiService, UserManager<ApplicationUser> userManager)
     {
         this.apiService = apiService;
         this.userManager = userManager;

@@ -4,6 +4,7 @@ using TodoListApp.WebApi.Models;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Models.ViewModels;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Extensions;
 
@@ -51,7 +52,7 @@ public static class ModelsExtension
         };
     }
 
-    public static TodoListViewModel ToTodoListViewModel(this TodoListModel todoList, [FromServices] UserManager<IdentityUser> userManager, int currentPage = 1)
+    public static TodoListViewModel ToTodoListViewModel(this TodoListModel todoList, [FromServices] UserManager<ApplicationUser> userManager, int currentPage = 1)
     {
         ExceptionHelper.CheckObjectForNull(todoList);
         ExceptionHelper.CheckObjectForNull(userManager);
@@ -62,12 +63,12 @@ public static class ModelsExtension
             Title = todoList.Title,
             Description = todoList.Description,
             Owner = userManager.FindByIdAsync(todoList.OwnerId).Result,
-            Editors = todoList.Editors?.Select(editorId => userManager.FindByIdAsync(editorId).Result).ToList() ?? new List<IdentityUser>(),
+            Editors = todoList.Editors?.Select(editorId => userManager.FindByIdAsync(editorId).Result).ToList() ?? new List<ApplicationUser>(),
             TasksList = new ListOfTasks(todoList.Tasks ?? new List<TaskModel>(), currentPage),
         };
     }
 
-    public static TaskViewModel ToTaskViewModel(this TaskModel task, IdentityUser? assignee = null)
+    public static TaskViewModel ToTaskViewModel(this TaskModel task, ApplicationUser? assignee = null)
     {
         ExceptionHelper.CheckObjectForNull(task);
         return new TaskViewModel

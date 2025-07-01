@@ -12,12 +12,12 @@ namespace TodoListApp.WebApp.Controllers;
 [Authorize]
 public class AccountController : Controller
 {
-    private readonly UserManager<IdentityUser> userManager;
-    private readonly SignInManager<IdentityUser> signInManager;
+    private readonly UserManager<ApplicationUser> userManager;
+    private readonly SignInManager<ApplicationUser> signInManager;
     private readonly ITokenGenerator jwtTokenGenerator;
     private readonly IEmailSender emailSender;
 
-    public AccountController(UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager, ITokenGenerator jwtTokenGenerator, IEmailSender emailSender)
+    public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager, ITokenGenerator jwtTokenGenerator, IEmailSender emailSender)
     {
         this.userManager = userManager;
         this.signInManager = signInManager;
@@ -38,7 +38,7 @@ public class AccountController : Controller
         if (this.ModelState.IsValid)
         {
             ExceptionHelper.CheckObjectForNull(loginUser);
-            IdentityUser user = await this.userManager.FindByNameAsync(loginUser.Username);
+            ApplicationUser user = await this.userManager.FindByNameAsync(loginUser.Username);
 
             if (user != null)
             {
@@ -92,7 +92,7 @@ public class AccountController : Controller
         {
             if (await this.userManager.FindByEmailAsync(registerUser.Email) is null)
             {
-                IdentityUser user = new IdentityUser
+                ApplicationUser user = new ApplicationUser
                 {
                     UserName = registerUser.Username,
                     Email = registerUser.Email,
@@ -128,7 +128,7 @@ public class AccountController : Controller
     {
         if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(email))
         {
-            IdentityUser user = await this.userManager.FindByEmailAsync(email);
+            ApplicationUser user = await this.userManager.FindByEmailAsync(email);
 
             if (user is not null)
             {
@@ -158,7 +158,7 @@ public class AccountController : Controller
         if (this.ModelState.IsValid)
         {
             ExceptionHelper.CheckObjectForNull(checkEmailModel);
-            IdentityUser user = await this.userManager.FindByEmailAsync(checkEmailModel.Email);
+            ApplicationUser user = await this.userManager.FindByEmailAsync(checkEmailModel.Email);
 
             if (user is not null)
             {
@@ -204,7 +204,7 @@ public class AccountController : Controller
     {
         if (this.ModelState.IsValid && changePasswordModel is not null)
         {
-            IdentityUser user = await this.userManager.FindByEmailAsync(changePasswordModel.Email);
+            ApplicationUser user = await this.userManager.FindByEmailAsync(changePasswordModel.Email);
             if (user is not null)
             {
                 var result = await this.userManager.ResetPasswordAsync(user, changePasswordModel.Token, changePasswordModel.NewPassword);

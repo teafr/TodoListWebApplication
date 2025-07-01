@@ -1,11 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using TodoListApp.WebApp.Extensions;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Models.ViewModels;
 
 public class ListOfTodoLists
 {
-    public ListOfTodoLists(IEnumerable<TodoListModel> todoLists, UserManager<IdentityUser> userManager)
+    public ListOfTodoLists(IEnumerable<TodoListModel> todoLists, UserManager<ApplicationUser> userManager)
     {
         this.TodoLists = todoLists.Select(todoList => todoList.ToTodoListViewModel(userManager)).ToList();
 

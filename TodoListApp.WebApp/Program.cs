@@ -10,7 +10,7 @@ internal static class Program
         var builder = WebApplication.CreateBuilder(args);
 
         _ = builder.Services.AddControllersWithViews(options => options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute()));
-        _ = builder.Services.ConfigureIdentity().ConfigureServices(builder.Configuration).AddDependencies();
+        _ = builder.Services.ConfigureIdentity().ConfigureServices(builder.Configuration).AddDependencies(builder.Configuration);
 
         var app = builder.Build();
 

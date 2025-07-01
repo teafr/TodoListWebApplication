@@ -1,9 +1,12 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using TodoListApp.ApiClient.Services;
 using TodoListApp.WebApp.Contexts;
 using TodoListApp.WebApp.Handlers;
 using TodoListApp.WebApp.Helpers;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Extensions;
@@ -33,9 +36,9 @@ internal static class ServiceCollectionExtension
         return services;
     }
 
-    public static IServiceCollection AddDependencies(this IServiceCollection services)
+    public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
     {
-        _ = services.AddDbContext<IdentityContext>();
+        _ = services.AddDbContext<IdentityContext>(options => options.UseSqlServer(configuration.GetConnectionString("IdentityDbConnection")));
         _ = services.AddScoped<ITodoListWebApiService, TodoListWebApiService>();
         _ = services.AddScoped<ITaskWebApiService, TaskWebApiService>();
         _ = services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
@@ -45,7 +48,7 @@ internal static class ServiceCollectionExtension
 
     public static IServiceCollection ConfigureIdentity(this IServiceCollection services)
     {
-        _ = services.AddIdentity<IdentityUser, IdentityRole>(options =>
+        _ = services.AddIdentity<ApplicationUser, IdentityRole>(options =>
         {
             options.User.RequireUniqueEmail = true;
             options.Password.RequiredLength = 8;

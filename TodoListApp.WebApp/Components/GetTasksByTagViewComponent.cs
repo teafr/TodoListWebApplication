@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Extensions;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Models.ViewModels;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Components;
@@ -12,9 +13,9 @@ namespace TodoListApp.WebApp.Components;
 public class GetTasksByTagViewComponent : ViewComponent
 {
     private readonly ITaskWebApiService apiService;
-    private readonly UserManager<IdentityUser> userManager;
+    private readonly UserManager<ApplicationUser> userManager;
 
-    public GetTasksByTagViewComponent(ITaskWebApiService apiService, UserManager<IdentityUser> userManager)
+    public GetTasksByTagViewComponent(ITaskWebApiService apiService, UserManager<ApplicationUser> userManager)
     {
         this.apiService = apiService;
         this.userManager = userManager;

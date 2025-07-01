@@ -3,15 +3,16 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using TodoListApp.WebApp.Models.ViewModels;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Components;
 
 [Authorize]
 public class SearchUsersViewComponent : ViewComponent
 {
-    private readonly UserManager<IdentityUser> userManager;
+    private readonly UserManager<ApplicationUser> userManager;
 
-    public SearchUsersViewComponent(UserManager<IdentityUser> userManager)
+    public SearchUsersViewComponent(UserManager<ApplicationUser> userManager)
     {
         this.userManager = userManager;
     }
@@ -20,7 +21,7 @@ public class SearchUsersViewComponent : ViewComponent
     {
         if (this.ModelState.IsValid)
         {
-            List<IdentityUser> users = await this.userManager.Users.Where(u => EF.Functions.Like(u.UserName, $"%{searchQuery.ToUpperInvariant()}%")).ToListAsync();
+            List<ApplicationUser> users = await this.userManager.Users.Where(u => EF.Functions.Like(u.UserName, $"%{searchQuery.ToUpperInvariant()}%")).ToListAsync();
             return this.View((users, taskId));
         }
 

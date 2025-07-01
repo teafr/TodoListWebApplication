@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Extensions;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Models.ViewModels;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Controllers;
@@ -12,9 +13,9 @@ namespace TodoListApp.WebApp.Controllers;
 public class TodoListsController : Controller
 {
     private readonly ITodoListWebApiService apiService;
-    private readonly UserManager<IdentityUser> userManager;
+    private readonly UserManager<ApplicationUser> userManager;
 
-    public TodoListsController(ITodoListWebApiService apiService, UserManager<IdentityUser> userManager)
+    public TodoListsController(ITodoListWebApiService apiService, UserManager<ApplicationUser> userManager)
     {
         this.apiService = apiService;
         this.userManager = userManager;

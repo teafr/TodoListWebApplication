@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Models.ViewModels;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Components;
@@ -11,9 +12,9 @@ namespace TodoListApp.WebApp.Components;
 public class TodoListMenuViewComponent : ViewComponent
 {
     private readonly ITodoListWebApiService todoListWebApiService;
-    private readonly UserManager<IdentityUser> userManager;
+    private readonly UserManager<ApplicationUser> userManager;
 
-    public TodoListMenuViewComponent(ITodoListWebApiService todoListWebApiService, UserManager<IdentityUser> userManager)
+    public TodoListMenuViewComponent(ITodoListWebApiService todoListWebApiService, UserManager<ApplicationUser> userManager)
     {
         this.todoListWebApiService = todoListWebApiService;
         this.userManager = userManager;

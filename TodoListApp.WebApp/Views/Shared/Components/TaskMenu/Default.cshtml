@@ -1,5 +1,5 @@
 @model List<string>
-@inject SignInManager<IdentityUser> SignInManager;
+@inject SignInManager<ApplicationUser> SignInManager;
 
 @{
     var currentQuery = Context.Request.Query;

@@ -3,16 +3,17 @@ using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.IdentityModel.Tokens;
 using TodoListApp.WebApp.Helpers;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Handlers;
 
 public class AuthHeaderHandler : DelegatingHandler
 {
     private readonly IHttpContextAccessor httpContextAccessor;
-    private readonly UserManager<IdentityUser> userManager;
+    private readonly UserManager<ApplicationUser> userManager;
     private readonly ITokenGenerator tokenGenerator;
 
-    public AuthHeaderHandler(IHttpContextAccessor httpContextAccessor, UserManager<IdentityUser> userManager, ITokenGenerator tokenGenerator)
+    public AuthHeaderHandler(IHttpContextAccessor httpContextAccessor, UserManager<ApplicationUser> userManager, ITokenGenerator tokenGenerator)
     {
         this.httpContextAccessor = httpContextAccessor;
         this.userManager = userManager;

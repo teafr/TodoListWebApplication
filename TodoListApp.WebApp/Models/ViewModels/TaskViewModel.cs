@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Models.ViewModels;
 
@@ -24,7 +24,7 @@ public class TaskViewModel
     [Required]
     public StatusViewModel Status { get; set; } = new StatusViewModel();
 
-    public IdentityUser? Assignee { get; set; }
+    public ApplicationUser? Assignee { get; set; }
 
     [Required]
     public int TodoListId { get; set; }

@@ -1,20 +1,19 @@
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Contexts;
 
-public class IdentityContext : IdentityDbContext<IdentityUser>
+public class IdentityContext : IdentityDbContext<ApplicationUser>
 {
-    private readonly string connectionString;
-
-    public IdentityContext(IConfiguration configuration)
+    public IdentityContext(DbContextOptions<IdentityContext> options)
+        : base(options)
     {
-        this.connectionString = configuration.GetConnectionString("IdentityDbConnection") ?? string.Empty;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    protected override void OnModelCreating(ModelBuilder builder)
     {
-        _ = optionsBuilder.UseSqlServer(this.connectionString);
+        base.OnModelCreating(builder);
+        _ = builder?.Entity<ApplicationUser>().Property(u => u.HasAccsses);
     }
 }
