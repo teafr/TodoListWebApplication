@@ -23,7 +23,7 @@ public class TodoListEntity : IDatabaseEntity
     public string OwnerId { get; set; } = string.Empty;
 
     [Column("editors")]
-    public string? Editors { get; set; }
+    public string? Editors { get; set; } = "[]";
 
     public ICollection<TaskEntity> Tasks { get; init; } = new List<TaskEntity>();
 }

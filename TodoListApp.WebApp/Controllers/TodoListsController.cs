@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -64,6 +65,21 @@ public class TodoListsController : Controller
     {
         if (this.ModelState.IsValid)
         {
+            ApplicationUser? editor = await this.userManager.FindByIdAsync(editorId);
+            if (editor is null)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Such user doesn't exist" });
+            }
+
+            List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
+            lists.Add(todoListId);
+            editor.HasAccsses = JsonSerializer.Serialize(lists);
+
+            if (!(await this.userManager.UpdateAsync(editor)).Succeeded)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Failed to add editor to list" });
+            }
+
             var todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
             if (todoList is null)
             {
@@ -126,6 +142,22 @@ public class TodoListsController : Controller
     {
         if (this.ModelState.IsValid)
         {
+            ApplicationUser? editor = await this.userManager.FindByIdAsync(editorId);
+            if (editor is null)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Such user doesn't exist" });
+            }
+
+            List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
+            if (lists.Remove(todoListId))
+            {
+                editor.HasAccsses = JsonSerializer.Serialize(lists);
+            }
+            else
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "This user doesn't have access to this list, so removing wasn't successful" });
+            }
+
             var todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
             if (todoList is null)
             {

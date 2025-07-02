@@ -1,9 +1,12 @@
+@using System.Text.Json
 @model TaskViewModel
 @inject UserManager<ApplicationUser> userManager;
 
 @{
     ViewData["Title"] = "Task details";
     Layout = "~/Views/Shared/_CenterLayout.cshtml";
+    ApplicationUser user = await userManager.GetUserAsync(Context.User);
+    // bool canEdit = user != null && (user.UserName == Model.Assignee?.UserName || (JsonSerializer.Deserialize<List<int>>(user.HasAccsses)?.Any(todoListId => todoListId == Model.Id) ?? false));
     string? searchQuery = Context.Request.Query["searchQuery"];
 }
 

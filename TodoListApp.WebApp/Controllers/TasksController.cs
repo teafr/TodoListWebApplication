@@ -293,10 +293,10 @@ public class TasksController : Controller
                 return this.NotFound();
             }
 
-            ApplicationUser identityUser = await this.userManager.FindByIdAsync(assigneeId);
-            if (identityUser is null)
+            ApplicationUser user = await this.userManager.FindByIdAsync(assigneeId);
+            if (user is null)
             {
-                return this.NotFound();
+                return this.View("Error", new ErrorViewModel { RequestId = "Such user doesn't exist" });
             }
 
             await this.apiService.UpdateAssigneeAsync(taskId, assigneeId);

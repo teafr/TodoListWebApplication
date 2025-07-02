@@ -14,8 +14,8 @@ public class Task
         this.Description = entity.Description;
         this.CreationDate = entity.CreationDate;
         this.DueDate = entity.DueDate;
-        this.Tags = JsonSerializer.Deserialize<List<string>>(entity.Tags ?? string.Empty);
-        this.Comments = JsonSerializer.Deserialize<List<string>>(entity.Comments ?? string.Empty);
+        this.Tags = JsonSerializer.Deserialize<List<string>>(entity.Tags ?? "[]");
+        this.Comments = JsonSerializer.Deserialize<List<string>>(entity.Comments ?? "[]");
         this.Status = new Status(entity.Status);
         this.TodoListId = entity.TodoListId;
         this.AssigneeId = entity.AssigneeId;

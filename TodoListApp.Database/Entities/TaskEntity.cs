@@ -38,10 +38,10 @@ public class TaskEntity : IDatabaseEntity
     public int TodoListId { get; set; }
 
     [Column("tag")]
-    public string? Tags { get; set; }
+    public string? Tags { get; set; } = "[]";
 
     [Column("comment")]
-    public string? Comments { get; set; }
+    public string? Comments { get; set; } = "[]";
 
     [Required]
     public StatusEntity Status { get; set; } = new StatusEntity();

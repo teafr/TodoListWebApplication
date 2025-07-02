@@ -25,7 +25,7 @@ public class TodoList
         this.Title = todoListEntity.Title;
         this.Description = todoListEntity.Description;
         this.OwnerId = todoListEntity.OwnerId;
-        this.Editors = JsonSerializer.Deserialize<List<string>>(todoListEntity.Editors ?? string.Empty);
+        this.Editors = JsonSerializer.Deserialize<List<string>>(todoListEntity.Editors ?? "[]");
         this.Tasks = todoListEntity.Tasks?.Select(task => new Task(task)).ToList() ?? new List<Task>();
     }
 
