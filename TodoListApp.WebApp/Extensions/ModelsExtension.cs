@@ -64,7 +64,7 @@ public static class ModelsExtension
             Description = todoList.Description,
             Owner = userManager.FindByIdAsync(todoList.OwnerId).Result,
             Editors = todoList.Editors?.Select(editorId => userManager.FindByIdAsync(editorId).Result).ToList() ?? new List<ApplicationUser>(),
-            TasksList = new TodoListTasks(todoList, todoList.OwnerId, currentPage),
+            TasksList = new TodoListTasks(todoList, currentPage),
         };
     }
 

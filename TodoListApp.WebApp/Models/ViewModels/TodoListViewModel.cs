@@ -1,5 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Models.ViewModels;
@@ -17,7 +16,7 @@ public class TodoListViewModel
 
     public ApplicationUser? Owner { get; set; }
 
-    public ICollection<ApplicationUser>? Editors { get; init; }
+    public ICollection<ApplicationUser>? Editors { get; init; } = new List<ApplicationUser>();
 
     public bool CurrentlyPicked { get; set; }
 

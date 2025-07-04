@@ -44,17 +44,22 @@ public class TodoListsController : Controller
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
     }
 
-    public async Task<IActionResult> Create()
+    public IActionResult Create()
     {
-        return this.View(new TodoListViewModel() { Owner = await this.userManager.GetUserAsync(this.User) });
+        return this.View();
     }
 
     [HttpPost]
     public async Task<IActionResult> Create(TodoListViewModel todoListViewModel)
     {
-        if (this.ModelState.IsValid)
+        if (this.ModelState.IsValid && todoListViewModel is not null)
         {
+            ApplicationUser? currentUser = await this.userManager.GetUserAsync(this.User);
+            todoListViewModel.Owner = currentUser;
+            todoListViewModel.Editors!.Add(currentUser);
+
             await this.apiService.CreateTodoListAsync(new TodoListModel(todoListViewModel));
+
             return this.RedirectToAction("Index");
         }
 
@@ -148,20 +153,24 @@ public class TodoListsController : Controller
                 return this.View("Error", new ErrorViewModel { RequestId = "Such user doesn't exist" });
             }
 
-            List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
-            if (lists.Remove(todoListId))
-            {
-                editor.HasAccsses = JsonSerializer.Serialize(lists);
-            }
-            else
-            {
-                return this.View("Error", new ErrorViewModel { RequestId = "This user doesn't have access to this list, so removing wasn't successful" });
-            }
-
             var todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
             if (todoList is null)
             {
                 return this.NotFound();
+            }
+
+            List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
+            if (lists.Remove(todoListId))
+            {
+                editor.HasAccsses = JsonSerializer.Serialize(lists);
+                if (!(await this.userManager.UpdateAsync(editor)).Succeeded)
+                {
+                    return this.View("Error", new ErrorViewModel { RequestId = "Failed to add editor to list" });
+                }
+            }
+            else
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "This user doesn't have access to this list, so removing wasn't successful" });
             }
 
             await this.apiService.RemoveEditorAsync(todoListId, editorId);

@@ -1,10 +1,13 @@
 @model TodoListViewModel
+@inject UserManager<ApplicationUser> userManager;
 
 @{
     ViewBag.Title = @Model.Title + " Tasks";
     Layout = "~/Views/Shared/_TodoListLayout.cshtml";
+
+    var user = await userManager.FindByNameAsync(Context.User.Identity.Name);
+    bool canEdit = Model.Editors?.Contains(user) ?? false;
     string? searchQuery = Context.Request.Query["searchQuery"];
-    var userName = Context.User.Identity?.Name;
 }
 
 <h2>@Model.Title Tasks</h2>
@@ -12,7 +15,7 @@
 
 @await Html.PartialAsync("_TasksPartial", Model.TasksList?.Tasks.Skip((Model.TasksList.PaginationInfo.CurrentPage - 1) * Model.TasksList.PaginationInfo.PageSize).Take(Model.TasksList.PaginationInfo.PageSize).ToList())
 
-@if (userName == Model.Owner?.UserName)
+@if (canEdit)
 {
     <a asp-action="AddTask" asp-controller="Tasks" asp-route-todoListId="@Model.Id" class="btn btn-secondary w-100">
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-plus-lg" viewBox="0 0 16 16">
@@ -52,47 +55,53 @@
 }
 
 <div>
-    <h5>Owner</h5>
-    <ul class="list-group mb-3">
-        <li class="list-group-item">
-            <span>@Model.Owner?.UserName</span>
-            @if (userName == Model.Owner?.UserName)
-            {
-                <span class="text-secondary">(you)</span>
-                <form asp-action="ChangeListOwner" asp-controller="TodoLists" method="post" class="float-end">
-                    <input type="hidden" name="todoListId" value="@Model.Id" />
-                    <button type="submit" class="btn text-secondary btn-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
-                            <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
-                        </svg>
-                    </button>
-                </form>
-            }
-        </li>
-    </ul>
-    <h5>Editors</h5>
+    <h5>Members</h5>
     @if (Model.Editors is not null && Model.Editors.Any())
     {
         <ul class="list-group mb-3">
             @foreach (var editor in Model.Editors)
             {
                 <li class="list-group-item">
-                    <span>@editor.UserName</span>
-                    @if (editor.UserName == userName)
+                    @editor.UserName
+                    @if (editor.UserName == user.UserName)
                     {
                         <span class="text-secondary">(you)</span>
                     }
-                    @if (userName == Model.Owner?.UserName)
+
+                    @if (editor.Id == Model.Owner.Id)
                     {
-                        <form asp-action="RemoveEditor" asp-controller="TodoLists" method="post" class="float-end">
-                            <input type="hidden" name="todoListId" value="@Model.Id" />
-                            <input type="hidden" name="editorId" value="@editor.Id" />
-                            <button type="submit" class="btn btn-sm text-danger">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
-                                    <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
-                                </svg>
-                            </button>
-                        </form>
+                        <span class="text-danger">- Admin</span>
+                    }
+                    else
+                    {
+                        <span class="text-primary">- Editor</span>
+                    }
+
+                    @if (user.UserName == Model.Owner.UserName)
+                    {
+                        @if (editor.Id == Model.Owner.Id)
+                        {
+                            <form asp-action="ChangeListOwner" asp-controller="TodoLists" method="post" class="float-end">
+                                <input type="hidden" name="todoListId" value="@Model.Id" />
+                                <button type="submit" class="btn text-secondary btn-sm">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil" viewBox="0 0 16 16">
+                                        <path d="M12.146.146a.5.5 0 0 1 .708 0l3 3a.5.5 0 0 1 0 .708l-10 10a.5.5 0 0 1-.168.11l-5 2a.5.5 0 0 1-.65-.65l2-5a.5.5 0 0 1 .11-.168zM11.207 2.5 13.5 4.793 14.793 3.5 12.5 1.207zm1.586 3L10.5 3.207 4 9.707V10h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.293zm-9.761 5.175-.106.106-1.528 3.821 3.821-1.528.106-.106A.5.5 0 0 1 5 12.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.468-.325" />
+                                    </svg>
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <form asp-action="RemoveEditor" asp-controller="TodoLists" method="post" class="float-end">
+                                <input type="hidden" name="todoListId" value="@Model.Id" />
+                                <input type="hidden" name="editorId" value="@editor.Id" />
+                                <button type="submit" class="btn btn-sm text-danger">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash3" viewBox="0 0 16 16">
+                                        <path d="M6.5 1h3a.5.5 0 0 1 .5.5v1H6v-1a.5.5 0 0 1 .5-.5M11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3A1.5 1.5 0 0 0 5 1.5v1H1.5a.5.5 0 0 0 0 1h.538l.853 10.66A2 2 0 0 0 4.885 16h6.23a2 2 0 0 0 1.994-1.84l.853-10.66h.538a.5.5 0 0 0 0-1zm1.958 1-.846 10.58a1 1 0 0 1-.997.92h-6.23a1 1 0 0 1-.997-.92L3.042 3.5zm-7.487 1a.5.5 0 0 1 .528.47l.5 8.5a.5.5 0 0 1-.998.06L5 5.03a.5.5 0 0 1 .47-.53Zm5.058 0a.5.5 0 0 1 .47.53l-.5 8.5a.5.5 0 1 1-.998-.06l.5-8.5a.5.5 0 0 1 .528-.47M8 4.5a.5.5 0 0 1 .5.5v8.5a.5.5 0 0 1-1 0V5a.5.5 0 0 1 .5-.5" />
+                                    </svg>
+                                </button>
+                            </form>
+                        }
                     }
                 </li>
             }
@@ -100,10 +109,10 @@
     }
     else
     {
-        <p class="text-secondary">No editors added yet.</p>
+        <p class="text-secondary">No members found.</p>
     }
 </div>
-@if (userName == Model.Owner?.UserName)
+@if (user.UserName == Model.Owner?.UserName)
 {
     <button class="btn btn-outline-primary mb-2" onclick="toggleForm('addEditorForm')">Add editor</button>
 }
