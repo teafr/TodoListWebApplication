@@ -5,8 +5,12 @@
     ViewBag.Title = @Model.Title + " Tasks";
     Layout = "~/Views/Shared/_TodoListLayout.cshtml";
 
-    var user = await userManager.FindByNameAsync(Context.User.Identity.Name);
-    bool canEdit = Model.Editors?.Contains(user) ?? false;
+    bool canEdit = false;
+    ApplicationUser? user = await userManager.GetUserAsync(Context.User);
+    if (user is not null)
+    {
+        canEdit = Model.Editors?.Contains(user) ?? false;
+    }
     string? searchQuery = Context.Request.Query["searchQuery"];
 }
 
@@ -63,21 +67,21 @@
             {
                 <li class="list-group-item">
                     @editor.UserName
-                    @if (editor.UserName == user.UserName)
+                    @if (editor.UserName == user?.UserName)
                     {
                         <span class="text-secondary">(you)</span>
                     }
-
+                    -
                     @if (editor.Id == Model.Owner.Id)
                     {
-                        <span class="text-danger">- Admin</span>
+                        <span class="text-danger">Admin</span>
                     }
                     else
                     {
-                        <span class="text-primary">- Editor</span>
+                        <span class="text-primary">Editor</span>
                     }
 
-                    @if (user.UserName == Model.Owner.UserName)
+                    @if (user?.UserName == Model.Owner.UserName)
                     {
                         @if (editor.Id == Model.Owner.Id)
                         {
@@ -112,7 +116,7 @@
         <p class="text-secondary">No members found.</p>
     }
 </div>
-@if (user.UserName == Model.Owner?.UserName)
+@if (user?.UserName == Model.Owner?.UserName)
 {
     <button class="btn btn-outline-primary mb-2" onclick="toggleForm('addEditorForm')">Add editor</button>
 }
