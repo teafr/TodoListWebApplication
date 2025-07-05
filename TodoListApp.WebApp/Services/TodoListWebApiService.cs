@@ -7,9 +7,9 @@ namespace TodoListApp.WebApp.Services;
 
 public class TodoListWebApiService : ITodoListWebApiService
 {
-    private readonly TodoListApiClientService todoListApiClient;
+    private readonly ITodoListApiClientService todoListApiClient;
 
-    public TodoListWebApiService(TodoListApiClientService todoListApiClient)
+    public TodoListWebApiService(ITodoListApiClientService todoListApiClient)
     {
         this.todoListApiClient = todoListApiClient;
     }

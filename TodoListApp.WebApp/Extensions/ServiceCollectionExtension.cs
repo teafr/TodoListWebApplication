@@ -20,12 +20,12 @@ internal static class ServiceCollectionExtension
         _ = services.AddHttpContextAccessor();
         _ = services.AddTransient<AuthHeaderHandler>();
 
-        _ = services.AddHttpClient<TaskApiClientService>(client =>
+        _ = services.AddHttpClient<ITaskApiClientService, TaskApiClientService>(client =>
         {
             client.BaseAddress = new Uri(baseUrl);
         }).AddHttpMessageHandler<AuthHeaderHandler>();
 
-        _ = services.AddHttpClient<TodoListApiClientService>(client =>
+        _ = services.AddHttpClient<ITodoListApiClientService, TodoListApiClientService>(client =>
         {
             client.BaseAddress = new Uri(baseUrl);
         }).AddHttpMessageHandler<AuthHeaderHandler>();

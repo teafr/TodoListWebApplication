@@ -5,7 +5,7 @@ using TodoListApp.WebApi.Models;
 
 namespace TodoListApp.ApiClient.Services;
 
-public class TodoListApiClientService : IDisposable
+public class TodoListApiClientService : IDisposable, ITodoListApiClientService
 {
     private readonly string url = "api/todolists/";
     private readonly HttpClient httpClient;
@@ -36,39 +36,42 @@ public class TodoListApiClientService : IDisposable
         }
 
         _ = response.EnsureSuccessStatusCode();
-
-        var stream = await response.Content.ReadAsStreamAsync();
-        return await JsonSerializer.DeserializeAsync<TodoListApiModel>(stream, this.options);
+        return await JsonSerializer.DeserializeAsync<TodoListApiModel>(await response.Content.ReadAsStreamAsync(), this.options);
     }
 
-    public async Task CreateTodoListAsync(TodoListApiModel todoList)
+    public async Task<bool> CreateTodoListAsync(TodoListApiModel todoList)
     {
-        _ = await this.httpClient.PostAsJsonAsync(this.url, todoList);
+        return (await this.httpClient.PostAsJsonAsync(this.url, todoList)).IsSuccessStatusCode;
     }
 
-    public async Task AddEditorAsync(int todoListId, string userId)
+    public async Task<bool> AddEditorAsync(int todoListId, string userId)
     {
-        _ = await this.httpClient.PostAsJsonAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}/editors"), userId);
+        return (await this.httpClient.PostAsJsonAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}/editors"), userId)).IsSuccessStatusCode;
     }
 
-    public async Task UpdateTodoListAsync(TodoListApiModel todoList)
+    public async Task<bool> UpdateTodoListAsync(TodoListApiModel todoList)
     {
-        _ = await this.httpClient.PutAsJsonAsync(this.url, todoList);
+        return (await this.httpClient.PutAsJsonAsync(this.url, todoList)).IsSuccessStatusCode;
     }
 
-    public async Task DeleteTodoListAsync(int todoListId)
+    public async Task<bool> UpdateOwnerAsync(int todoListId, string userId)
     {
-        _ = await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}"));
+        return (await this.httpClient.PutAsJsonAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}/owner"), userId)).IsSuccessStatusCode;
     }
 
-    public async Task DeleteLodoListsByUserId(string userId)
+    public async Task<bool> DeleteTodoListAsync(int todoListId)
     {
-        _ = await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"user/{userId}"));
+        return (await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}"))).IsSuccessStatusCode;
     }
 
-    public async Task RemoveEditorAsync(int todoListId, string userId)
+    public async Task<bool> DeleteLodoListsByUserId(string userId)
     {
-        _ = await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}/editors/{userId}"));
+        return (await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"user/{userId}"))).IsSuccessStatusCode;
+    }
+
+    public async Task<bool> RemoveEditorAsync(int todoListId, string userId)
+    {
+        return (await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}/editors/{userId}"))).IsSuccessStatusCode;
     }
 
     public void Dispose()

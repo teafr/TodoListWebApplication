@@ -7,9 +7,9 @@ namespace TodoListApp.WebApp.Services;
 
 public class TaskWebApiService : ITaskWebApiService
 {
-    private readonly TaskApiClientService taskApiClient;
+    private readonly ITaskApiClientService taskApiClient;
 
-    public TaskWebApiService(TaskApiClientService taskApiClient)
+    public TaskWebApiService(ITaskApiClientService taskApiClient)
     {
         this.taskApiClient = taskApiClient;
     }

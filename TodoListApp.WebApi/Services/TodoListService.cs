@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Text.Json;
 using Serilog;
 using TodoListApp.Database.Entities;
@@ -31,8 +30,7 @@ public class TodoListService : ITodoListService
 
         var todoLists = await this.todoListRepository.GetAsync();
         return todoLists?.Where(list => list.OwnerId == userId || (JsonSerializer.Deserialize<List<string>>(list.Editors ?? string.Empty)?
-                         .Any(editorId => editorId == userId) ?? false))
-                         .Select(list => new TodoList(list)).ToList() ?? new List<TodoList>();
+                         .Contains(userId) ?? false)).Select(list => new TodoList(list)).ToList() ?? new List<TodoList>();
     }
 
     public async Task<TodoList?> GetTodoListByIdAsync(int id)
@@ -75,6 +73,22 @@ public class TodoListService : ITodoListService
         else
         {
             ThrowIfTodoListNotFound(todoList.Id);
+        }
+    }
+
+    public async System.Threading.Tasks.Task UpdateOwner(int todoListId, string ownerId)
+    {
+        Log.Debug("Try to update owner of to-do list by id {0}.", todoListId);
+        TodoListEntity? existingList = await this.todoListRepository.GetByIdAsync(todoListId);
+        if (existingList is not null)
+        {
+            existingList.OwnerId = ownerId;
+            this.todoListRepository.Update(existingList);
+            Log.Information("Owner of to-do list by id {0} was updated.", todoListId);
+        }
+        else
+        {
+            ThrowIfTodoListNotFound(todoListId);
         }
     }
 
