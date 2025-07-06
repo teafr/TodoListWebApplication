@@ -3,29 +3,29 @@ using TodoListApp.WebApp.Models;
 namespace TodoListApp.WebApp.Services;
 public interface ITaskWebApiService
 {
+    Task<bool> AddCommentAsync(int taskId, string comment);
+
+    Task<bool> AddTagAsync(int taskId, string tag);
+
+    Task<bool> CreateTaskAsync(TaskModel task);
+
+    Task<bool> DeleteTaskAsync(int taskId);
+
+    Task<List<string>> GetTagsByUserIdAsync(string userId);
+
     Task<TaskModel?> GetTaskByIdAsync(int taskId);
 
     Task<List<TaskModel>> GetTasksByUserIdAsync(string userId);
 
-    Task<List<string>> GetTagsByUserIdAsync(string userId);
+    Task<bool> RemoveCommentFromTaskAsync(int taskId, string comment);
 
-    System.Threading.Tasks.Task AddCommentAsync(int taskId, string comment);
+    Task<bool> RemoveTagFromTaskAsync(int taskId, string tag);
 
-    System.Threading.Tasks.Task AddTagAsync(int taskId, string tag);
+    Task<bool> UpdateAssigneeAsync(int taskId, string assigneeId);
 
-    System.Threading.Tasks.Task CreateTaskAsync(TaskModel task);
+    Task<bool> UpdateCommentInTaskAsync(int taskId, string oldComment, string newComment);
 
-    System.Threading.Tasks.Task UpdateCommentInTaskAsync(int taskId, string oldComment, string newComment);
+    Task<bool> UpdateStatusOfTaskAsync(int taskId, int statusId);
 
-    System.Threading.Tasks.Task UpdateStatusOfTaskAsync(int taskId, int statusId);
-
-    System.Threading.Tasks.Task UpdateAssigneeAsync(int taskId, string assigneeId);
-
-    System.Threading.Tasks.Task UpdateTaskAsync(TaskModel task);
-
-    System.Threading.Tasks.Task DeleteTaskAsync(int taskId);
-
-    System.Threading.Tasks.Task RemoveCommentFromTaskAsync(int taskId, string comment);
-
-    System.Threading.Tasks.Task RemoveTagFromTaskAsync(int taskId, string tag);
+    Task<bool> UpdateTaskAsync(TaskModel task);
 }

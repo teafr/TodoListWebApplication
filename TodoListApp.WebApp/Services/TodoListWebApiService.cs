@@ -26,33 +26,33 @@ public class TodoListWebApiService : ITodoListWebApiService
         return todoList is null ? null : new TodoListModel(todoList);
     }
 
-    public async Task CreateTodoListAsync(TodoListModel todoList)
+    public async Task<bool> CreateTodoListAsync(TodoListModel todoList)
     {
-        await this.todoListApiClient.CreateTodoListAsync(todoList.ToTodoListApiModel());
+        return await this.todoListApiClient.CreateTodoListAsync(todoList.ToTodoListApiModel());
     }
 
-    public async Task AddEditorAsync(int todoListId, string editorId)
+    public async Task<bool> AddEditorAsync(int todoListId, string editorId)
     {
-        await this.todoListApiClient.AddEditorAsync(todoListId, editorId);
+        return await this.todoListApiClient.AddEditorAsync(todoListId, editorId);
     }
 
-    public async Task UpdateTodoListAsync(TodoListModel todoList)
+    public async Task<bool> UpdateTodoListAsync(TodoListModel todoList)
     {
-        await this.todoListApiClient.UpdateTodoListAsync(todoList.ToTodoListApiModel());
+        return await this.todoListApiClient.UpdateTodoListAsync(todoList.ToTodoListApiModel());
     }
 
-    public async Task DeleteTodoListAsync(int todoListId)
+    public async Task<bool> DeleteTodoListAsync(int todoListId)
     {
-        await this.todoListApiClient.DeleteTodoListAsync(todoListId);
+        return await this.todoListApiClient.DeleteTodoListAsync(todoListId);
     }
 
-    public async Task DeleteListsByUserIdAsync(string userId)
+    public async Task<bool> DeleteListsByUserIdAsync(string userId)
     {
-        await this.todoListApiClient.DeleteLodoListsByUserId(userId);
+        return await this.todoListApiClient.DeleteLodoListsByUserId(userId);
     }
 
-    public async Task RemoveEditorAsync(int todoListId, string editorId)
+    public async Task<bool> RemoveEditorAsync(int todoListId, string editorId)
     {
-        await this.todoListApiClient.RemoveEditorAsync(todoListId, editorId);
+        return await this.todoListApiClient.RemoveEditorAsync(todoListId, editorId);
     }
 }
