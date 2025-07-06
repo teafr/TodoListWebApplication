@@ -13,6 +13,7 @@ public static class ModelsExtension
     public static TodoListApiModel ToTodoListApiModel(this TodoListModel todoList)
     {
         ExceptionHelper.CheckObjectForNull(todoList);
+
         return new TodoListApiModel
         {
             Id = todoList.Id,
@@ -27,6 +28,7 @@ public static class ModelsExtension
     public static TaskApiModel ToTaskApiModel(this TaskModel task)
     {
         ExceptionHelper.CheckObjectForNull(task);
+
         return new TaskApiModel
         {
             Id = task.Id,
@@ -45,6 +47,7 @@ public static class ModelsExtension
     public static StatusApiModel ToStatusApiModel(this StatusModel status)
     {
         ExceptionHelper.CheckObjectForNull(status);
+
         return new StatusApiModel
         {
             Id = status.Id,
@@ -71,6 +74,7 @@ public static class ModelsExtension
     public static TaskViewModel ToTaskViewModel(this TaskModel task, ApplicationUser? assignee = null)
     {
         ExceptionHelper.CheckObjectForNull(task);
+
         return new TaskViewModel
         {
             Id = task.Id,
@@ -89,6 +93,7 @@ public static class ModelsExtension
     public static StatusViewModel ToStatusViewModel(this StatusModel status)
     {
         ExceptionHelper.CheckObjectForNull(status);
+
         return new StatusViewModel
         {
             Id = status.Id,

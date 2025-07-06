@@ -13,10 +13,12 @@
         <div class="mb-3">
             <label for="title" class="form-label">Title</label>
             <input type="text" asp-for="Title" class="form-control" id="title" value="@Model.Title">
+            <span asp-validation-for="Title" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label for="description" class="form-label">Description</label>
             <input type="text" class="form-control" asp-for="Description" id="description" value="@Model.Description">
+            <span asp-validation-for="Description" class="text-danger"></span>
         </div>
         <div class="form-group">
             <input asp-for="Id" type="hidden" class="form-control" />

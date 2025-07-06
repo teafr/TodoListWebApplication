@@ -24,8 +24,8 @@ public class AuthHeaderHandler : DelegatingHandler
     {
         ExceptionHelper.CheckObjectForNull(request);
 
-        var context = this.httpContextAccessor.HttpContext;
-        var token = context?.Request.Cookies["JWToken"];
+        HttpContext? context = this.httpContextAccessor.HttpContext;
+        string? token = context?.Request.Cookies["JWToken"];
 
         if (!string.IsNullOrEmpty(token))
         {

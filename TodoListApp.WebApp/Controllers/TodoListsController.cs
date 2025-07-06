@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using TodoListApp.WebApp.Extensions;
+using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models;
 using TodoListApp.WebApp.Models.ViewModels;
 using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
@@ -126,13 +127,15 @@ public class TodoListsController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(TodoListViewModel todoListViewModel)
     {
+        ExceptionHelper.CheckObjectForNull(todoListViewModel);
+
         if (this.ModelState.IsValid)
         {
             await this.apiService.UpdateTodoListAsync(new TodoListModel(todoListViewModel));
             return this.RedirectToAction("GetTasks", new { todoListId = todoListViewModel.Id });
         }
 
-        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+        return this.View(todoListViewModel);
     }
 
     public async Task<IActionResult> Delete(int todoListId)

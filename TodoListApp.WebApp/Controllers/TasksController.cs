@@ -35,7 +35,16 @@ public class TasksController : Controller
                 return this.View(new ListOfTasks(new List<TaskModel>(), new TaskFilterModel()));
             }
 
-            List<TaskModel>? tasks = await this.apiService.GetTasksByUserIdAsync(userId);
+            List<TaskModel>? tasks;
+
+            try
+            {
+                tasks = await this.apiService.GetTasksByUserIdAsync(userId);
+            }
+            catch (HttpRequestException)
+            {
+                return this.RedirectToAction("Login", "Account");
+            }
 
             if (filter.StatusId == 0)
             {
@@ -207,13 +216,15 @@ public class TasksController : Controller
     [HttpPost]
     public async Task<IActionResult> Edit(TaskViewModel taskViewModel)
     {
+        ExceptionHelper.CheckObjectForNull(taskViewModel);
+
         if (this.ModelState.IsValid)
         {
-            await this.apiService.UpdateTaskAsync(new TaskModel(taskViewModel));
+            _ = await this.apiService.UpdateTaskAsync(new TaskModel(taskViewModel));
             return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = taskViewModel.TodoListId });
         }
 
-        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+        return this.View(taskViewModel);
     }
 
     [HttpPost]

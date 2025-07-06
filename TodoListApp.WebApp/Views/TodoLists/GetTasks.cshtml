@@ -14,7 +14,7 @@
     string? searchQuery = Context.Request.Query["searchQuery"];
 }
 
-<h2>@Model.Title Tasks</h2>
+<h2>"@Model.Title" Tasks</h2>
 <p>@Model.Description</p>
 
 @await Html.PartialAsync("_TasksPartial", Model.TasksList?.Tasks.Skip((Model.TasksList.PaginationInfo.CurrentPage - 1) * Model.TasksList.PaginationInfo.PageSize).Take(Model.TasksList.PaginationInfo.PageSize).ToList())
