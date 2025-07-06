@@ -131,8 +131,12 @@ public class TodoListsController : Controller
 
         if (this.ModelState.IsValid)
         {
-            await this.apiService.UpdateTodoListAsync(new TodoListModel(todoListViewModel));
-            return this.RedirectToAction("GetTasks", new { todoListId = todoListViewModel.Id });
+            if (await this.apiService.UpdateTodoListAsync(new TodoListModel(todoListViewModel)))
+            {
+                return this.RedirectToAction("GetTasks", new { todoListId = todoListViewModel.Id });
+            }
+
+            throw new InvalidOperationException("Failed to update the to-do list.");
         }
 
         return this.View(todoListViewModel);
@@ -148,8 +152,12 @@ public class TodoListsController : Controller
                 return this.NotFound();
             }
 
-            await this.apiService.DeleteTodoListAsync(todoListId);
-            return this.RedirectToAction("Index");
+            if (await this.apiService.DeleteTodoListAsync(todoListId))
+            {
+                return this.RedirectToAction("Index");
+            }
+
+            throw new InvalidOperationException("Failed to delete the to-do list.");
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -185,8 +193,15 @@ public class TodoListsController : Controller
                 return this.View("Error", new ErrorViewModel { RequestId = "This user doesn't have access to this list, so removing wasn't successful" });
             }
 
-            await this.apiService.RemoveEditorAsync(todoListId, editorId);
-            return this.RedirectToAction("GetTasks", new { todoListId });
+            if (await this.apiService.RemoveEditorAsync(todoListId, editorId))
+            {
+                return this.RedirectToAction("GetTasks", new { todoListId });
+            }
+
+            lists.Add(todoListId);
+            editor.HasAccsses = JsonSerializer.Serialize(lists);
+            _ = await this.userManager.UpdateAsync(editor);
+            return this.View("Error", new ErrorViewModel { RequestId = "Failed to remove editor from list" });
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });

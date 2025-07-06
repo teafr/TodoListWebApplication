@@ -11,7 +11,7 @@ public class TaskViewModel
     [StringLength(30, MinimumLength = 2, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
     public string Title { get; set; } = string.Empty;
 
-    [StringLength(150, MinimumLength = 2, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
+    [StringLength(100, MinimumLength = 2, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.")]
     public string? Description { get; set; }
 
     [Required]
