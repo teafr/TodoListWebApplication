@@ -58,9 +58,12 @@ public class TodoListsController : Controller
             todoListViewModel.Owner = currentUser;
             todoListViewModel.Editors!.Add(currentUser);
 
-            await this.apiService.CreateTodoListAsync(new TodoListModel(todoListViewModel));
+            if (await this.apiService.CreateTodoListAsync(new TodoListModel(todoListViewModel)))
+            {
+                return this.RedirectToAction("Index");
+            }
 
-            return this.RedirectToAction("Index");
+            throw new InvalidOperationException("Failed to create a new to-do list.");
         }
 
         return this.View();
@@ -76,23 +79,29 @@ public class TodoListsController : Controller
                 return this.View("Error", new ErrorViewModel { RequestId = "Such user doesn't exist" });
             }
 
-            List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
-            lists.Add(todoListId);
-            editor.HasAccsses = JsonSerializer.Serialize(lists);
-
-            if (!(await this.userManager.UpdateAsync(editor)).Succeeded)
-            {
-                return this.View("Error", new ErrorViewModel { RequestId = "Failed to add editor to list" });
-            }
-
-            var todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
+            TodoListModel? todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
             if (todoList is null)
             {
                 return this.NotFound();
             }
 
-            await this.apiService.AddEditorAsync(todoListId, editorId);
-            return this.RedirectToAction("GetTasks", new { todoListId });
+            List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
+            lists.Add(todoListId);
+            editor.HasAccsses = JsonSerializer.Serialize(lists);
+
+            if ((await this.userManager.UpdateAsync(editor)).Succeeded)
+            {
+                if (await this.apiService.AddEditorAsync(todoListId, editorId))
+                {
+                    return this.RedirectToAction("GetTasks", new { todoListId });
+                }
+
+                _ = lists.Remove(todoListId);
+                editor.HasAccsses = JsonSerializer.Serialize(lists);
+                _ = await this.userManager.UpdateAsync(editor);
+            }
+
+            return this.View("Error", new ErrorViewModel { RequestId = "Failed to add editor to list" });
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });

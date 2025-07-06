@@ -52,7 +52,7 @@ public static class ModelsExtension
         };
     }
 
-    public static TodoListViewModel ToTodoListViewModel(this TodoListModel todoList, [FromServices] UserManager<ApplicationUser> userManager, int currentPage = 1)
+    public static TodoListViewModel ToTodoListViewModel(this TodoListModel todoList, UserManager<ApplicationUser> userManager, int currentPage = 1)
     {
         ExceptionHelper.CheckObjectForNull(todoList);
         ExceptionHelper.CheckObjectForNull(userManager);
