@@ -46,54 +46,54 @@ public class TaskApiClientService : IDisposable, ITaskApiClientService
         return await this.httpClient.GetFromJsonAsync<List<string>>(this.url + $"{userId}/tags");
     }
 
-    public async Task<bool> CreateTaskAsync(TaskApiModel task)
+    public async Task<HttpResponseMessage> CreateTaskAsync(TaskApiModel task)
     {
-        return (await this.httpClient.PostAsJsonAsync(this.url, task)).IsSuccessStatusCode;
+        return await this.httpClient.PostAsJsonAsync(this.url, task);
     }
 
-    public async Task<bool> AddTagAsync(int taskId, string tag)
+    public async Task<HttpResponseMessage> AddTagAsync(int taskId, string tag)
     {
-        return (await this.httpClient.PostAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/tag/{tag}"), null)).IsSuccessStatusCode;
+        return await this.httpClient.PostAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/tag/{tag}"), null);
     }
 
-    public async Task<bool> AddCommentAsync(int taskId, string comment)
+    public async Task<HttpResponseMessage> AddCommentAsync(int taskId, string comment)
     {
-        return (await this.httpClient.PostAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/comment/{comment}"), null)).IsSuccessStatusCode;
+        return await this.httpClient.PostAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/comment/{comment}"), null);
     }
 
-    public async Task<bool> UpdateTaskAsync(TaskApiModel task)
+    public async Task<HttpResponseMessage> UpdateTaskAsync(TaskApiModel task)
     {
-        return (await this.httpClient.PutAsJsonAsync(this.url, task)).IsSuccessStatusCode;
+        return await this.httpClient.PutAsJsonAsync(this.url, task);
     }
 
-    public async Task<bool> UpdateStatusOfTaskAsync(int taskId, int statusId)
+    public async Task<HttpResponseMessage> UpdateStatusOfTaskAsync(int taskId, int statusId)
     {
-        return (await this.httpClient.PutAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/status/{statusId}"), null)).IsSuccessStatusCode;
+        return await this.httpClient.PutAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/status/{statusId}"), null);
     }
 
-    public async Task<bool> UpdateAssigneeAsync(int taskId, string assigneeId)
+    public async Task<HttpResponseMessage> UpdateAssigneeAsync(int taskId, string assigneeId)
     {
-        return (await this.httpClient.PutAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/user/{assigneeId}"), null)).IsSuccessStatusCode;
+        return await this.httpClient.PutAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/user/{assigneeId}"), null);
     }
 
-    public async Task<bool> UpdateCommentInTaskAsync(int taskId, string oldcomment, string newComment)
+    public async Task<HttpResponseMessage> UpdateCommentInTaskAsync(int taskId, string oldcomment, string newComment)
     {
-        return (await this.httpClient.PutAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/comment/{oldcomment}/{newComment}"), null)).IsSuccessStatusCode;
+        return await this.httpClient.PutAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/comment/{oldcomment}/{newComment}"), null);
     }
 
-    public async Task<bool> DeleteTaskAsync(int taskId)
+    public async Task<HttpResponseMessage> DeleteTaskAsync(int taskId)
     {
-        return (await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}"))).IsSuccessStatusCode;
+        return await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}"));
     }
 
-    public async Task<bool> RemoveTagFromTaskAsync(int taskId, string tag)
+    public async Task<HttpResponseMessage> RemoveTagFromTaskAsync(int taskId, string tag)
     {
-        return (await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/tag/{tag}"))).IsSuccessStatusCode;
+        return await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/tag/{tag}"));
     }
 
-    public async Task<bool> RemoveCommentFromTaskAsync(int taskId, string comment)
+    public async Task<HttpResponseMessage> RemoveCommentFromTaskAsync(int taskId, string comment)
     {
-        return (await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/comment/{comment}"))).IsSuccessStatusCode;
+        return await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{taskId}/comment/{comment}"));
     }
 
     public void Dispose()
