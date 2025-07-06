@@ -8,7 +8,7 @@ using TodoListApp.WebApi.Services;
 
 namespace TodoListApp.WebApi.Controllers;
 
-//[Authorize]
+[Authorize]
 public class TodoListsController : BaseController
 {
     private readonly ITodoListService todoListService;

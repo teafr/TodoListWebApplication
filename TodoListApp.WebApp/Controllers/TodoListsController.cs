@@ -1,7 +1,9 @@
+using System.Net;
 using System.Text.Json;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 using TodoListApp.WebApp.Extensions;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models;
@@ -59,8 +61,16 @@ public class TodoListsController : Controller
             todoListViewModel.Owner = currentUser;
             todoListViewModel.Editors!.Add(currentUser);
 
-            if (await this.apiService.CreateTodoListAsync(new TodoListModel(todoListViewModel)))
+            var result = await this.apiService.CreateTodoListAsync(new TodoListModel(todoListViewModel));
+
+            if (result.StatusCode == HttpStatusCode.BadRequest)
             {
+                this.ModelState.AddModelError(string.Empty, "Invalid to-do list");
+            }
+
+            if (result.StatusCode == HttpStatusCode.Created)
+            {
+                Log.Debug("To-do list created successfully.");
                 return this.RedirectToAction("Index");
             }
 
@@ -80,19 +90,20 @@ public class TodoListsController : Controller
                 return this.View("Error", new ErrorViewModel { RequestId = "Such user doesn't exist" });
             }
 
-            TodoListModel? todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
-            if (todoList is null)
-            {
-                return this.NotFound();
-            }
-
             List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
             lists.Add(todoListId);
             editor.HasAccsses = JsonSerializer.Serialize(lists);
 
             if ((await this.userManager.UpdateAsync(editor)).Succeeded)
             {
-                if (await this.apiService.AddEditorAsync(todoListId, editorId))
+                var result = await this.apiService.AddEditorAsync(todoListId, editorId);
+
+                if (result.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return this.NotFound();
+                }
+
+                if (result.StatusCode == HttpStatusCode.NoContent)
                 {
                     return this.RedirectToAction("GetTasks", new { todoListId });
                 }
@@ -131,7 +142,8 @@ public class TodoListsController : Controller
 
         if (this.ModelState.IsValid)
         {
-            if (await this.apiService.UpdateTodoListAsync(new TodoListModel(todoListViewModel)))
+            var result = await this.apiService.UpdateTodoListAsync(new TodoListModel(todoListViewModel));
+            if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 return this.RedirectToAction("GetTasks", new { todoListId = todoListViewModel.Id });
             }
@@ -146,13 +158,13 @@ public class TodoListsController : Controller
     {
         if (this.ModelState.IsValid)
         {
-            var todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
-            if (todoList is null)
+            var result = await this.apiService.DeleteTodoListAsync(todoListId);
+            if (result.StatusCode == HttpStatusCode.NotFound)
             {
                 return this.NotFound();
             }
 
-            if (await this.apiService.DeleteTodoListAsync(todoListId))
+            if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 return this.RedirectToAction("Index");
             }
@@ -173,12 +185,6 @@ public class TodoListsController : Controller
                 return this.View("Error", new ErrorViewModel { RequestId = "Such user doesn't exist" });
             }
 
-            var todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
-            if (todoList is null)
-            {
-                return this.NotFound();
-            }
-
             List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
             if (lists.Remove(todoListId))
             {
@@ -193,7 +199,13 @@ public class TodoListsController : Controller
                 return this.View("Error", new ErrorViewModel { RequestId = "This user doesn't have access to this list, so removing wasn't successful" });
             }
 
-            if (await this.apiService.RemoveEditorAsync(todoListId, editorId))
+            var result = await this.apiService.RemoveEditorAsync(todoListId, editorId);
+            if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
+            }
+
+            if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 return this.RedirectToAction("GetTasks", new { todoListId });
             }

@@ -26,32 +26,32 @@ public class TodoListWebApiService : ITodoListWebApiService
         return todoList is null ? null : new TodoListModel(todoList);
     }
 
-    public async Task<bool> CreateTodoListAsync(TodoListModel todoList)
+    public async Task<HttpResponseMessage> CreateTodoListAsync(TodoListModel todoList)
     {
         return await this.todoListApiClient.CreateTodoListAsync(todoList.ToTodoListApiModel());
     }
 
-    public async Task<bool> AddEditorAsync(int todoListId, string editorId)
+    public async Task<HttpResponseMessage> AddEditorAsync(int todoListId, string editorId)
     {
         return await this.todoListApiClient.AddEditorAsync(todoListId, editorId);
     }
 
-    public async Task<bool> UpdateTodoListAsync(TodoListModel todoList)
+    public async Task<HttpResponseMessage> UpdateTodoListAsync(TodoListModel todoList)
     {
         return await this.todoListApiClient.UpdateTodoListAsync(todoList.ToTodoListApiModel());
     }
 
-    public async Task<bool> DeleteTodoListAsync(int todoListId)
+    public async Task<HttpResponseMessage> DeleteTodoListAsync(int todoListId)
     {
         return await this.todoListApiClient.DeleteTodoListAsync(todoListId);
     }
 
-    public async Task<bool> DeleteListsByUserIdAsync(string userId)
+    public async Task<HttpResponseMessage> DeleteListsByUserIdAsync(string userId)
     {
         return await this.todoListApiClient.DeleteLodoListsByUserId(userId);
     }
 
-    public async Task<bool> RemoveEditorAsync(int todoListId, string editorId)
+    public async Task<HttpResponseMessage> RemoveEditorAsync(int todoListId, string editorId)
     {
         return await this.todoListApiClient.RemoveEditorAsync(todoListId, editorId);
     }

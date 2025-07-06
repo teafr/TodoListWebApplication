@@ -31,52 +31,52 @@ public class TaskWebApiService : ITaskWebApiService
         return (await this.taskApiClient.GetTagsByUserIdAsync(userId)) ?? new List<string>();
     }
 
-    public async Task<bool> CreateTaskAsync(TaskModel task)
+    public async Task<HttpResponseMessage> CreateTaskAsync(TaskModel task)
     {
         return await this.taskApiClient.CreateTaskAsync(task.ToTaskApiModel());
     }
 
-    public async Task<bool> AddTagAsync(int taskId, string tag)
+    public async Task<HttpResponseMessage> AddTagAsync(int taskId, string tag)
     {
         return await this.taskApiClient.AddTagAsync(taskId, tag);
     }
 
-    public async Task<bool> AddCommentAsync(int taskId, string comment)
+    public async Task<HttpResponseMessage> AddCommentAsync(int taskId, string comment)
     {
         return await this.taskApiClient.AddCommentAsync(taskId, comment);
     }
 
-    public async Task<bool> UpdateTaskAsync(TaskModel task)
+    public async Task<HttpResponseMessage> UpdateTaskAsync(TaskModel task)
     {
         return await this.taskApiClient.UpdateTaskAsync(task.ToTaskApiModel());
     }
 
-    public async Task<bool> UpdateStatusOfTaskAsync(int taskId, int statusId)
+    public async Task<HttpResponseMessage> UpdateStatusOfTaskAsync(int taskId, int statusId)
     {
         return await this.taskApiClient.UpdateStatusOfTaskAsync(taskId, statusId);
     }
 
-    public async Task<bool> UpdateAssigneeAsync(int taskId, string assigneeId)
+    public async Task<HttpResponseMessage> UpdateAssigneeAsync(int taskId, string assigneeId)
     {
         return await this.taskApiClient.UpdateAssigneeAsync(taskId, assigneeId);
     }
 
-    public async Task<bool> UpdateCommentInTaskAsync(int taskId, string oldComment, string newComment)
+    public async Task<HttpResponseMessage> UpdateCommentInTaskAsync(int taskId, string oldComment, string newComment)
     {
         return await this.taskApiClient.UpdateCommentInTaskAsync(taskId, oldComment, newComment);
     }
 
-    public async Task<bool> DeleteTaskAsync(int taskId)
+    public async Task<HttpResponseMessage> DeleteTaskAsync(int taskId)
     {
         return await this.taskApiClient.DeleteTaskAsync(taskId);
     }
 
-    public async Task<bool> RemoveTagFromTaskAsync(int taskId, string tag)
+    public async Task<HttpResponseMessage> RemoveTagFromTaskAsync(int taskId, string tag)
     {
         return await this.taskApiClient.RemoveTagFromTaskAsync(taskId, tag);
     }
 
-    public async Task<bool> RemoveCommentFromTaskAsync(int taskId, string comment)
+    public async Task<HttpResponseMessage> RemoveCommentFromTaskAsync(int taskId, string comment)
     {
         return await this.taskApiClient.RemoveCommentFromTaskAsync(taskId, comment);
     }

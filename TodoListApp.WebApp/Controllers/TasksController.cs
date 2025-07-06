@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Net;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -144,8 +145,17 @@ public class TasksController : Controller
             taskViewModel.Status = new StatusViewModel() { Id = (int)StatusOfTask.NotStarted, Name = string.Empty };
             taskViewModel.CreationDate = DateTime.Now;
 
-            await this.apiService.CreateTaskAsync(new TaskModel(taskViewModel));
-            return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = taskViewModel.TodoListId });
+            var result = await this.apiService.CreateTaskAsync(new TaskModel(taskViewModel));
+            if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                this.ModelState.AddModelError(string.Empty, "Invalid task");
+            }
+            else if (result.StatusCode == HttpStatusCode.Created)
+            {
+                return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = taskViewModel.TodoListId });
+            }
+
+            throw new InvalidOperationException("Failed to create a new task.");
         }
 
         return this.View(new TaskViewModel() { TodoListId = taskViewModel.TodoListId });
