@@ -146,13 +146,13 @@ public class TasksController : Controller
             taskViewModel.CreationDate = DateTime.Now;
 
             var result = await this.apiService.CreateTaskAsync(new TaskModel(taskViewModel));
-            if (result.StatusCode == HttpStatusCode.BadRequest)
-            {
-                this.ModelState.AddModelError(string.Empty, "Invalid task");
-            }
-            else if (result.StatusCode == HttpStatusCode.Created)
+            if (result.StatusCode == HttpStatusCode.Created)
             {
                 return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = taskViewModel.TodoListId });
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                this.ModelState.AddModelError(string.Empty, "Invalid task");
             }
 
             throw new InvalidOperationException("Failed to create a new task.");
@@ -166,19 +166,21 @@ public class TasksController : Controller
     {
         if (this.ModelState.IsValid)
         {
-            TaskModel? task = await this.apiService.GetTaskByIdAsync(taskId);
-            if (task is null)
+            var result = await this.apiService.AddCommentAsync(taskId, comment);
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("Details", new { taskId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
             {
                 return this.NotFound();
             }
-
-            if (task.Comments?.Contains(comment) ?? false)
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
             {
-                return this.View("Error", new ErrorViewModel { RequestId = "Comment already exists" });
+                return this.View("Error", new ErrorViewModel { RequestId = "Comment invalid or already exists" });
             }
 
-            await this.apiService.AddCommentAsync(taskId, comment);
-            return this.RedirectToAction("Details", new { taskId });
+            throw new InvalidOperationException("Failed to add comment to the task.");
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -189,19 +191,19 @@ public class TasksController : Controller
     {
         if (this.ModelState.IsValid)
         {
-            TaskModel? task = await this.apiService.GetTaskByIdAsync(taskId);
-            if (task is null)
+            var result = await this.apiService.AddTagAsync(taskId, tag);
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("Details", new { taskId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
             {
                 return this.NotFound();
             }
-
-            if (task.Tags?.Contains(tag) ?? false)
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
             {
-                return this.View("Error", new ErrorViewModel { RequestId = "Tag already exists" });
+                return this.View("Error", new ErrorViewModel { RequestId = "Tag invalid or already exists" });
             }
-
-            await this.apiService.AddTagAsync(taskId, tag);
-            return this.RedirectToAction("Details", new { taskId });
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -230,8 +232,21 @@ public class TasksController : Controller
 
         if (this.ModelState.IsValid)
         {
-            _ = await this.apiService.UpdateTaskAsync(new TaskModel(taskViewModel));
-            return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = taskViewModel.TodoListId });
+            var result = await this.apiService.UpdateTaskAsync(new TaskModel(taskViewModel));
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = taskViewModel.TodoListId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Failed to update task: Invalid input." });
+            }
+
+            throw new InvalidOperationException("Failed to update the task.");
         }
 
         return this.View(taskViewModel);
@@ -240,34 +255,26 @@ public class TasksController : Controller
     [HttpPost]
     public async Task<IActionResult> EditComment(int taskId, string oldComment, string newComment)
     {
-        if (!this.ModelState.IsValid)
+        if (this.ModelState.IsValid && !string.IsNullOrWhiteSpace(newComment) && !string.IsNullOrEmpty(newComment))
         {
-            return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
+            var result = await this.apiService.UpdateCommentInTaskAsync(taskId, oldComment, newComment);
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("Details", new { taskId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Failed to update comment: Invalid input or such comment already exists." });
+            }
+
+            throw new InvalidOperationException("Failed to update the comment.");
         }
 
-        if (string.IsNullOrWhiteSpace(newComment))
-        {
-            this.ModelState.AddModelError("newComment", "Comment cannot be empty.");
-        }
-
-        TaskModel? task = await this.apiService.GetTaskByIdAsync(taskId);
-        if (task is null || !(task.Comments?.Contains(oldComment) ?? false))
-        {
-            return this.NotFound();
-        }
-
-        if (task.Comments.Contains(newComment))
-        {
-            this.ModelState.AddModelError("newComment", "This comment already exists.");
-        }
-
-        if (string.IsNullOrEmpty(newComment))
-        {
-            return this.View("Error", new ErrorViewModel { RequestId = "Comment can't be empty" });
-        }
-
-        await this.apiService.UpdateCommentInTaskAsync(taskId, oldComment, newComment);
-        return this.RedirectToAction("Details", new { taskId });
+        return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State. New comment can't be empty or contain only whitespaces" });
     }
 
     public async Task<IActionResult> RemoveComment(int taskId, string comment)
@@ -280,8 +287,21 @@ public class TasksController : Controller
                 return this.NotFound();
             }
 
-            await this.apiService.RemoveCommentFromTaskAsync(taskId, comment);
-            return this.RedirectToAction("Details", new { taskId });
+            var result = await this.apiService.RemoveCommentFromTaskAsync(taskId, comment);
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("Details", new { taskId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Failed to remove comment: such comment doesn't exists." });
+            }
+
+            throw new InvalidOperationException("Failed to remove the comment from the task.");
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -297,8 +317,21 @@ public class TasksController : Controller
                 return this.NotFound();
             }
 
-            await this.apiService.RemoveTagFromTaskAsync(taskId, tag);
-            return this.RedirectToAction("Details", new { taskId });
+            var result = await this.apiService.RemoveTagFromTaskAsync(taskId, tag);
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("Details", new { taskId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Failed to remove tag: such tag doesn't exists." });
+            }
+
+            throw new InvalidOperationException("Failed to remove the tag from the task.");
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -308,20 +341,23 @@ public class TasksController : Controller
     {
         if (this.ModelState.IsValid)
         {
-            TaskModel? task = await this.apiService.GetTaskByIdAsync(taskId);
-            if (task is null)
-            {
-                return this.NotFound();
-            }
-
             ApplicationUser user = await this.userManager.FindByIdAsync(assigneeId);
             if (user is null)
             {
                 return this.View("Error", new ErrorViewModel { RequestId = "Such user doesn't exist" });
             }
 
-            await this.apiService.UpdateAssigneeAsync(taskId, assigneeId);
-            return this.RedirectToAction("Details", new { taskId });
+            var result = await this.apiService.UpdateAssigneeAsync(taskId, assigneeId);
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("Details", new { taskId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
+            }
+
+            throw new InvalidOperationException("Failed to assign task.");
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -337,9 +373,21 @@ public class TasksController : Controller
                 return this.NotFound();
             }
 
-            await this.apiService.UpdateStatusOfTaskAsync(taskId, statusId);
+            var result = await this.apiService.UpdateStatusOfTaskAsync(taskId, statusId);
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("Details", new { taskId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Failed to change status: Invalid status ID." });
+            }
 
-            return this.RedirectToAction("Details", new { taskId });
+            throw new InvalidOperationException("Failed to change the status of the task.");
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -355,7 +403,20 @@ public class TasksController : Controller
                 return this.NotFound();
             }
 
-            await this.apiService.DeleteTaskAsync(taskId);
+            var result = await this.apiService.DeleteTaskAsync(taskId);
+            if (result.StatusCode == HttpStatusCode.NoContent)
+            {
+                return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = task.TodoListId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                return this.View("Error", new ErrorViewModel { RequestId = "Failed to delete task: Invalid task ID." });
+            }
+
             return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = task.TodoListId });
         }
 

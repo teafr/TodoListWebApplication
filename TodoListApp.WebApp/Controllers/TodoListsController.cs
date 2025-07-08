@@ -63,15 +63,14 @@ public class TodoListsController : Controller
 
             var result = await this.apiService.CreateTodoListAsync(new TodoListModel(todoListViewModel));
 
-            if (result.StatusCode == HttpStatusCode.BadRequest)
-            {
-                this.ModelState.AddModelError(string.Empty, "Invalid to-do list");
-            }
-
             if (result.StatusCode == HttpStatusCode.Created)
             {
                 Log.Debug("To-do list created successfully.");
                 return this.RedirectToAction("Index");
+            }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                this.ModelState.AddModelError(string.Empty, "Invalid to-do list");
             }
 
             throw new InvalidOperationException("Failed to create a new to-do list.");
@@ -98,14 +97,13 @@ public class TodoListsController : Controller
             {
                 var result = await this.apiService.AddEditorAsync(todoListId, editorId);
 
-                if (result.StatusCode == HttpStatusCode.NotFound)
-                {
-                    return this.NotFound();
-                }
-
                 if (result.StatusCode == HttpStatusCode.NoContent)
                 {
                     return this.RedirectToAction("GetTasks", new { todoListId });
+                }
+                else if (result.StatusCode == HttpStatusCode.NotFound)
+                {
+                    return this.NotFound();
                 }
 
                 _ = lists.Remove(todoListId);
@@ -159,14 +157,14 @@ public class TodoListsController : Controller
         if (this.ModelState.IsValid)
         {
             var result = await this.apiService.DeleteTodoListAsync(todoListId);
-            if (result.StatusCode == HttpStatusCode.NotFound)
-            {
-                return this.NotFound();
-            }
 
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 return this.RedirectToAction("Index");
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
             }
 
             throw new InvalidOperationException("Failed to delete the to-do list.");
@@ -200,14 +198,14 @@ public class TodoListsController : Controller
             }
 
             var result = await this.apiService.RemoveEditorAsync(todoListId, editorId);
-            if (result.StatusCode == HttpStatusCode.NotFound)
-            {
-                return this.NotFound();
-            }
 
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 return this.RedirectToAction("GetTasks", new { todoListId });
+            }
+            else if (result.StatusCode == HttpStatusCode.NotFound)
+            {
+                return this.NotFound();
             }
 
             lists.Add(todoListId);
