@@ -1,4 +1,4 @@
-namespace TodoListApp.WebApp.Models.ViewModels;
+namespace TodoListApp.WebApp.Models;
 
 public enum TaskProperty
 {

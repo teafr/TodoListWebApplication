@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 
-namespace TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
+namespace TodoListApp.WebApp.Models.AuthenticationModels;
 
 public class ApplicationUser : IdentityUser
 {

@@ -2,8 +2,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.WebApp.Models.ViewModels;
-using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
+using TodoListApp.WebApp.Models;
+using TodoListApp.WebApp.Models.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Components;
 

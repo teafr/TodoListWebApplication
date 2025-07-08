@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
+using TodoListApp.WebApp.Models.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Contexts;
 

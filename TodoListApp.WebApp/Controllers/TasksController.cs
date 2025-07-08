@@ -4,23 +4,22 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using TodoListApp.ApiClient.Services;
 using TodoListApp.WebApi.Models;
 using TodoListApp.WebApp.Extensions;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models;
-using TodoListApp.WebApp.Models.ViewModels;
-using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
-using TodoListApp.WebApp.Services;
+using TodoListApp.WebApp.Models.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Controllers;
 
 [Authorize]
 public class TasksController : Controller
 {
-    private readonly ITaskWebApiService apiService;
+    private readonly ITaskApiClientService apiService;
     private readonly UserManager<ApplicationUser> userManager;
 
-    public TasksController(ITaskWebApiService apiService, UserManager<ApplicationUser> userManager)
+    public TasksController(ITaskApiClientService apiService, UserManager<ApplicationUser> userManager)
     {
         this.apiService = apiService;
         this.userManager = userManager;
@@ -35,10 +34,10 @@ public class TasksController : Controller
             if (userId is null)
             {
                 Log.Warning("User isn't authorized.");
-                return this.View(new ListOfTasks(new List<TaskModel>(), new TaskFilterModel()));
+                return this.View(new ListOfTasks(new List<TaskApiModel>(), new TaskFilterModel()));
             }
 
-            List<TaskModel>? tasks;
+            List<TaskApiModel>? tasks;
 
             try
             {
@@ -75,7 +74,7 @@ public class TasksController : Controller
                 _ => tasks
             };
 
-            return this.View(new ListOfTasks(tasks ?? new List<TaskModel>(), filter, filter.CurrentPage));
+            return this.View(new ListOfTasks(tasks ?? new List<TaskApiModel>(), filter, filter.CurrentPage));
         }
 
         return this.View("Error", new ErrorViewModel { RequestId = "Invalid Model State" });
@@ -85,7 +84,7 @@ public class TasksController : Controller
     {
         if (this.ModelState.IsValid)
         {
-            TaskModel? task = await this.apiService.GetTaskByIdAsync(taskId);
+            var task = await this.apiService.GetTaskByIdAsync(taskId);
             if (task is null)
             {
                 return this.NotFound();
@@ -117,7 +116,7 @@ public class TasksController : Controller
                 return this.View(new List<TaskViewModel>());
             }
 
-            List<TaskModel>? tasks = await this.apiService.GetTasksByUserIdAsync(this.userManager.GetUserId(this.User));
+            List<TaskApiModel>? tasks = await this.apiService.GetTasksByUserIdAsync(this.userManager.GetUserId(this.User));
             tasks = property switch
             {
                 "Title" => tasks?.Where(task => task.Title.Contains(query, StringComparison.OrdinalIgnoreCase)).ToList(),
@@ -154,7 +153,7 @@ public class TasksController : Controller
             taskViewModel.Status = new StatusViewModel() { Id = (int)StatusOfTask.NotStarted, Name = string.Empty };
             taskViewModel.CreationDate = DateTime.Now;
 
-            var result = await this.apiService.CreateTaskAsync(new TaskModel(taskViewModel));
+            var result = await this.apiService.CreateTaskAsync(taskViewModel.ToTaskApiModel());
             if (result.StatusCode == HttpStatusCode.Created)
             {
                 Log.Information("User {UserId} created a new task with title '{TaskTitle}'", currentUser.Id, taskViewModel.Title);
@@ -255,7 +254,7 @@ public class TasksController : Controller
         if (this.ModelState.IsValid)
         {
             var currentUser = await this.userManager.GetUserAsync(this.User);
-            var result = await this.apiService.UpdateTaskAsync(new TaskModel(taskViewModel));
+            var result = await this.apiService.UpdateTaskAsync(taskViewModel.ToTaskApiModel());
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 Log.Information("User {UserId} updated task with ID {TaskId} and title '{TaskTitle}'", currentUser.Id, taskViewModel.Id, taskViewModel.Title);
@@ -425,7 +424,7 @@ public class TasksController : Controller
     {
         if (this.ModelState.IsValid)
         {
-            TaskModel? task = await this.apiService.GetTaskByIdAsync(taskId);
+            var task = await this.apiService.GetTaskByIdAsync(taskId);
             if (task is null)
             {
                 return this.NotFound();

@@ -6,7 +6,7 @@ using TodoListApp.ApiClient.Services;
 using TodoListApp.WebApp.Contexts;
 using TodoListApp.WebApp.Handlers;
 using TodoListApp.WebApp.Helpers;
-using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
+using TodoListApp.WebApp.Models.AuthenticationModels;
 using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Extensions;
@@ -39,8 +39,6 @@ internal static class ServiceCollectionExtension
     public static IServiceCollection AddDependencies(this IServiceCollection services, IConfiguration configuration)
     {
         _ = services.AddDbContext<IdentityContext>(options => options.UseSqlServer(configuration.GetConnectionString("IdentityDbConnection")));
-        _ = services.AddScoped<ITodoListWebApiService, TodoListWebApiService>();
-        _ = services.AddScoped<ITaskWebApiService, TaskWebApiService>();
         _ = services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
 
         return services;

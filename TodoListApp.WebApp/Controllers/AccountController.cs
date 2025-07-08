@@ -4,8 +4,8 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using TodoListApp.WebApp.Helpers;
-using TodoListApp.WebApp.Models.ViewModels;
-using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
+using TodoListApp.WebApp.Models;
+using TodoListApp.WebApp.Models.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Controllers;
 

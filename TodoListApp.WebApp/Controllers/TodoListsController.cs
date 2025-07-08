@@ -4,11 +4,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
+using TodoListApp.ApiClient.Services;
+using TodoListApp.WebApi.Models;
 using TodoListApp.WebApp.Extensions;
 using TodoListApp.WebApp.Helpers;
 using TodoListApp.WebApp.Models;
-using TodoListApp.WebApp.Models.ViewModels;
-using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
+using TodoListApp.WebApp.Models.AuthenticationModels;
 using TodoListApp.WebApp.Services;
 
 namespace TodoListApp.WebApp.Controllers;
@@ -16,10 +17,10 @@ namespace TodoListApp.WebApp.Controllers;
 [Authorize]
 public class TodoListsController : Controller
 {
-    private readonly ITodoListWebApiService apiService;
+    private readonly ITodoListApiClientService apiService;
     private readonly UserManager<ApplicationUser> userManager;
 
-    public TodoListsController(ITodoListWebApiService apiService, UserManager<ApplicationUser> userManager)
+    public TodoListsController(ITodoListApiClientService apiService, UserManager<ApplicationUser> userManager)
     {
         this.apiService = apiService;
         this.userManager = userManager;
@@ -35,7 +36,7 @@ public class TodoListsController : Controller
         if (this.ModelState.IsValid)
         {
             this.ViewBag.CurrentTodoListId = todoListId;
-            TodoListModel? todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
+            TodoListApiModel? todoList = await this.apiService.GetTodoListByIdAsync(todoListId);
             if (todoList is null)
             {
                 return this.NotFound();
@@ -61,7 +62,7 @@ public class TodoListsController : Controller
             todoListViewModel.Owner = currentUser;
             todoListViewModel.Editors!.Add(currentUser);
 
-            var result = await this.apiService.CreateTodoListAsync(new TodoListModel(todoListViewModel));
+            var result = await this.apiService.CreateTodoListAsync(todoListViewModel.ToTodoListApiModel());
 
             if (result.StatusCode == HttpStatusCode.Created)
             {
@@ -145,7 +146,7 @@ public class TodoListsController : Controller
 
         if (this.ModelState.IsValid)
         {
-            var result = await this.apiService.UpdateTodoListAsync(new TodoListModel(todoListViewModel));
+            var result = await this.apiService.UpdateTodoListAsync(todoListViewModel.ToTodoListApiModel());
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 Log.Information("To-do list with ID {TodoListId} updated successfully", todoListViewModel.Id);

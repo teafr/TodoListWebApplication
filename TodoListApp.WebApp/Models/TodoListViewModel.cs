@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
-using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
+using TodoListApp.WebApp.Models.AuthenticationModels;
 
-namespace TodoListApp.WebApp.Models.ViewModels;
+namespace TodoListApp.WebApp.Models;
 
 public class TodoListViewModel
 {

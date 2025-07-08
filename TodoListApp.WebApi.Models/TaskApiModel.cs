@@ -13,7 +13,7 @@ namespace TodoListApp.WebApi.Models
         public string? Description { get; set; }
 
         [Required, StringLength(40, MinimumLength = 1)]
-        public string AssigneeId { get; set; } = string.Empty;
+        public string? AssigneeId { get; set; } = string.Empty;
 
         [Required]
         public DateTime CreationDate { get; set; }

@@ -1,11 +1,12 @@
+using TodoListApp.WebApi.Models;
 using TodoListApp.WebApp.Extensions;
 using TodoListApp.WebApp.Helpers;
 
-namespace TodoListApp.WebApp.Models.ViewModels;
+namespace TodoListApp.WebApp.Models;
 
 public class ListOfTodoListTasks
 {
-    public ListOfTodoListTasks(TodoListModel todoListModel)
+    public ListOfTodoListTasks(TodoListApiModel todoListModel)
     {
         ExceptionHelper.CheckObjectForNull(todoListModel);
 

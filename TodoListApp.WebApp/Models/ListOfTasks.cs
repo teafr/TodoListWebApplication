@@ -1,10 +1,11 @@
+using TodoListApp.WebApi.Models;
 using TodoListApp.WebApp.Extensions;
 
-namespace TodoListApp.WebApp.Models.ViewModels;
+namespace TodoListApp.WebApp.Models;
 
 public class ListOfTasks : PaginationViewModel
 {
-    public ListOfTasks(ICollection<TaskModel> tasks, TaskFilterModel taskFilter, int currentPage = 1)
+    public ListOfTasks(ICollection<TaskApiModel> tasks, TaskFilterModel taskFilter, int currentPage = 1)
         : base(tasks?.Count ?? 0, currentPage, 7)
     {
         this.Tasks = tasks?.Select(task => task.ToTaskViewModel()).ToList() ?? new List<TaskViewModel>();

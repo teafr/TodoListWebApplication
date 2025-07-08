@@ -1,21 +1,20 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using TodoListApp.ApiClient.Services;
 using TodoListApp.WebApp.Extensions;
 using TodoListApp.WebApp.Models;
-using TodoListApp.WebApp.Models.ViewModels;
-using TodoListApp.WebApp.Models.ViewModels.AuthenticationModels;
-using TodoListApp.WebApp.Services;
+using TodoListApp.WebApp.Models.AuthenticationModels;
 
 namespace TodoListApp.WebApp.Components;
 
 [Authorize]
 public class GetTasksByTagViewComponent : ViewComponent
 {
-    private readonly ITaskWebApiService apiService;
+    private readonly ITaskApiClientService apiService;
     private readonly UserManager<ApplicationUser> userManager;
 
-    public GetTasksByTagViewComponent(ITaskWebApiService apiService, UserManager<ApplicationUser> userManager)
+    public GetTasksByTagViewComponent(ITaskApiClientService apiService, UserManager<ApplicationUser> userManager)
     {
         this.apiService = apiService;
         this.userManager = userManager;
@@ -25,7 +24,7 @@ public class GetTasksByTagViewComponent : ViewComponent
     {
         if (this.ModelState.IsValid)
         {
-            List<TaskModel>? tasks = await this.apiService.GetTasksByUserIdAsync(this.userManager.GetUserId(this.UserClaimsPrincipal));
+            var tasks = await this.apiService.GetTasksByUserIdAsync(this.userManager.GetUserId(this.UserClaimsPrincipal));
             return this.View(tasks?.Where(task => task.Tags != null && task.Tags.Contains(tag))?.Select(taskModel => taskModel.ToTaskViewModel())?.ToList() ?? new List<TaskViewModel>());
         }
 
