@@ -19,6 +19,4 @@ public interface ITodoListService
     System.Threading.Tasks.Task UpdateEditors(int todoListId, ICollection<string> editors);
 
     System.Threading.Tasks.Task DeleteTodoListByIdAsync(int id);
-
-    System.Threading.Tasks.Task DeleteTodoListsByUserIdAsync(string userId);
 }

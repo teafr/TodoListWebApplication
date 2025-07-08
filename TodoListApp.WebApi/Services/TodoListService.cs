@@ -126,20 +126,6 @@ public class TodoListService : ITodoListService
         }
     }
 
-    public async System.Threading.Tasks.Task DeleteTodoListsByUserIdAsync(string userId) //???????????? delete from editrs
-    {
-        Log.Debug("Try to delete to-do lists of user by id {0}.", userId);
-
-        var todoLists = await this.todoListRepository.GetAsync();
-        var lists = todoLists?.Where(list => list.OwnerId == userId) ?? Enumerable.Empty<TodoListEntity>();
-        foreach (var todoList in lists)
-        {
-            this.todoListRepository.Delete(todoList);
-        }
-
-        Log.Debug("All to-do lists of user by id {0} was deleted.", userId);
-    }
-
     private static void ThrowIfTodoListNotFound(int todoListId)
     {
         Log.Warning("To-do list by id {0} was not found.", todoListId);

@@ -188,22 +188,6 @@ public class TodoListsController : BaseController
         return await this.ExecuteWithValidation(() => this.todoListService.DeleteTodoListByIdAsync(todoListId));
     }
 
-    /// <summary>
-    /// Delete all to-do lists by owner id.
-    /// </summary>
-    /// <param name="userId">Id of the owner.</param>
-    [HttpDelete("user/{userId}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> DeleteTodoListsByUserId(string userId)
-    {
-        return await this.ExecuteWithValidation(() => this.todoListService.DeleteTodoListsByUserIdAsync(userId));
-    }
-
     [HttpDelete("{todoListId:int}/editors/{editorId}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

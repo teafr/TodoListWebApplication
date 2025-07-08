@@ -109,7 +109,6 @@ public class TaskService : ITaskService
             existingTask.Title = taskToUpdate.Title;
             existingTask.Description = taskToUpdate.Description;
             existingTask.DueDate = taskToUpdate.DueDate;
-            existingTask.AssigneeId = taskToUpdate.AssigneeId;
             existingTask.StatusId = taskToUpdate.Status.Id;
 
             this.taskRepository.Update(existingTask);
