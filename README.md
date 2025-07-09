@@ -16,6 +16,8 @@ UI layer has three main Controllers:
 - [TodoLists](./TodoListApp.WebApp/Controllers/TodoListsController.cs)
 - [Tasks](./TodoListApp.WebApp/Controllers/TasksController.cs)
 
+Account controller gives user possibility to registrate, login, change password and log out. All of that were made with help of ASP.NET Entity Framework Identity. After authorisation token is storing in cookies during hour or during seven days (if user tick "remember me"). This token is necessery to make requests to API through API Client. [AuthHeaderHandler](./TodoListApp.WebApp/Handlers/AuthHeaderHandler.cs) checks if token is valid and put it to header. 
+
 ##### WEB API
 
 ##### Database
