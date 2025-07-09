@@ -187,4 +187,7 @@
     </tr>
 </table>
 
-<a asp-action="GetTasks" asp-controller="TodoLists" asp-route-todoListId="@Model.TodoListId" class="btn btn-outline-primary">Back to list</a>
+<div>
+    <a asp-action="GetTasks" asp-controller="TodoLists" asp-route-todoListId="@Model.TodoListId" class="btn btn-outline-primary">Back to list</a>
+    <a asp-action="Index" asp-controller="Tasks" class="btn btn-outline-success">All tasks</a>
+</div>
