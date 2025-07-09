@@ -76,23 +76,7 @@ public class TodoListService : ITodoListService
         }
     }
 
-    public async System.Threading.Tasks.Task UpdateOwner(int todoListId, string ownerId)
-    {
-        Log.Debug("Try to update owner of to-do list by id {0}.", todoListId);
-        TodoListEntity? existingList = await this.todoListRepository.GetByIdAsync(todoListId);
-        if (existingList is not null)
-        {
-            existingList.OwnerId = ownerId;
-            this.todoListRepository.Update(existingList);
-            Log.Information("Owner of to-do list by id {0} was updated.", todoListId);
-        }
-        else
-        {
-            ThrowIfTodoListNotFound(todoListId);
-        }
-    }
-
-    public async System.Threading.Tasks.Task UpdateEditors(int todoListId, ICollection<string> editors)
+    public async System.Threading.Tasks.Task UpdateEditorsAsync(int todoListId, ICollection<string> editors)
     {
         ArgumentNullException.ThrowIfNull(editors);
         Log.Debug("Try to update editors of to-do list by id {0}.", todoListId);

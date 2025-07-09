@@ -17,7 +17,5 @@ public interface ITodoListApiClientService
 
     Task<HttpResponseMessage> RemoveEditorAsync(int todoListId, string userId);
 
-    Task<HttpResponseMessage> UpdateOwnerAsync(int todoListId, string userId);
-
     Task<HttpResponseMessage> UpdateTodoListAsync(TodoListApiModel todoList);
 }

@@ -54,11 +54,6 @@ public class TodoListApiClientService : IDisposable, ITodoListApiClientService
         return await this.httpClient.PutAsJsonAsync(this.url, todoList);
     }
 
-    public async Task<HttpResponseMessage> UpdateOwnerAsync(int todoListId, string userId)
-    {
-        return await this.httpClient.PutAsJsonAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}/owner"), userId);
-    }
-
     public async Task<HttpResponseMessage> DeleteTodoListAsync(int todoListId)
     {
         return await this.httpClient.DeleteAsync(new Uri(this.httpClient.BaseAddress + this.url + $"{todoListId}"));

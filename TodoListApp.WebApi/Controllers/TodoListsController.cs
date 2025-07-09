@@ -108,7 +108,7 @@ public class TodoListsController : BaseController
         }
 
         todoList.Editors!.Add(editorId);
-        return await this.ExecuteWithValidation(() => this.todoListService.UpdateEditors(todoListId, todoList.Editors));
+        return await this.ExecuteWithValidation(() => this.todoListService.UpdateEditorsAsync(todoListId, todoList.Editors));
     }
 
     /// <summary>
@@ -138,31 +138,6 @@ public class TodoListsController : BaseController
         }
 
         return await this.ExecuteWithValidation(() => this.todoListService.UpdateTodoListAsync(new TodoList(todoListApiModel)));
-    }
-
-    [HttpPut("{todoListId:int}/owner")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(StatusCodes.Status415UnsupportedMediaType)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    [Produces(MediaTypeNames.Application.Json)]
-    public async Task<IActionResult> UpdateOwner(int todoListId, string newOwnerId)
-    {
-        TodoList? todoList = await this.todoListService.GetTodoListByIdAsync(todoListId);
-        if (todoList is null)
-        {
-            return this.NotFound();
-        }
-
-        if (todoList.OwnerId == newOwnerId)
-        {
-            Log.Warning("Owner with id {0} is already an owner of to-do list with id {1}.", newOwnerId, todoListId);
-            return this.BadRequest("This user is already an owner of this to-do list.");
-        }
-
-        return await this.ExecuteWithValidation(() => this.todoListService.UpdateOwner(todoList.Id, newOwnerId));
     }
 
     /// <summary>
@@ -210,7 +185,7 @@ public class TodoListsController : BaseController
             return this.BadRequest("Such editor doesn't exist in this to-do list.");
         }
 
-        return await this.ExecuteWithValidation(() => this.todoListService.UpdateEditors(todoListId, todoList.Editors));
+        return await this.ExecuteWithValidation(() => this.todoListService.UpdateEditorsAsync(todoListId, todoList.Editors));
     }
 
     public override NotFoundResult NotFound()

@@ -14,9 +14,7 @@ public interface ITodoListService
 
     System.Threading.Tasks.Task UpdateTodoListAsync(TodoList todoList);
 
-    System.Threading.Tasks.Task UpdateOwner(int todoListId, string ownerId);
-
-    System.Threading.Tasks.Task UpdateEditors(int todoListId, ICollection<string> editors);
+    System.Threading.Tasks.Task UpdateEditorsAsync(int todoListId, ICollection<string> editors);
 
     System.Threading.Tasks.Task DeleteTodoListByIdAsync(int id);
 }
