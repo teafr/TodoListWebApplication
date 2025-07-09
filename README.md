@@ -10,6 +10,8 @@ Application has four layers:
 - [Database](./TodoListApp.Database) (Class Libarary)
 - [API Client](./TodoListApp.ApiClient) (Class Libarary)
 
+All custom services and ASP.NET services were used in project with help of DI container. So services were injected from constructor and were used as interfaces to follow dependency inversion.
+
 ##### WEB Application (UI)
 UI layer has three main Controllers:
 - [Account](./TodoListApp.WebApp/Controllers/AccountController.cs)
