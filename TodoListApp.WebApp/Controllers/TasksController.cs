@@ -384,6 +384,11 @@ public class TasksController : Controller
             {
                 return this.NotFound();
             }
+            else if (result.StatusCode == HttpStatusCode.BadRequest)
+            {
+                Log.Warning("User {UserId} attempted to assign task ID {TaskId} to the same user ID {AssigneeId}", currentUserId, taskId, assigneeId);
+                return this.View("Error", new ErrorViewModel { RequestId = "Failed to assign task: this task has already been assigned to this user." });
+            }
 
             Log.Error("User {UserId} failed to assign task ID {TaskId} to user {AssigneeId}. Status code: ", currentUserId, taskId, assigneeId, result.StatusCode);
             return this.View("Error", new ErrorViewModel { RequestId = "We couldn't assign the task. Please try again later." });

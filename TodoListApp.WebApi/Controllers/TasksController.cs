@@ -239,6 +239,12 @@ public class TasksController : BaseController
             return this.NotFound();
         }
 
+        if (task.AssigneeId == userId)
+        {
+            Log.Warning("Assignee wasn't updated because it is the same user.");
+            return this.BadRequest();
+        }
+
         return await this.ExecuteWithValidation(() => this.taskService.UpdateAssigneeAsync(taskId, userId));
     }
 

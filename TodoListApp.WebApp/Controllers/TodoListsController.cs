@@ -94,6 +94,12 @@ public class TodoListsController : Controller
             }
 
             List<int> lists = JsonSerializer.Deserialize<List<int>>(string.IsNullOrEmpty(editor.HasAccsses) ? "[]" : editor.HasAccsses) ?? new List<int>();
+            if (lists.Contains(todoListId))
+            {
+                Log.Warning("Editor {EditorId} already has access to list {TodoListId}", editorId, todoListId);
+                return this.View("Error", new ErrorViewModel { RequestId = "This user already has access to this list" });
+            }
+
             lists.Add(todoListId);
             editor.HasAccsses = JsonSerializer.Serialize(lists);
 
