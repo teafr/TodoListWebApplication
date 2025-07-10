@@ -2,6 +2,18 @@
 
 ### Web Application demonstration
 
+##### CRUD operations with to-do lists and tasks
+
+##### Tasks filtration, pagination and searching
+
+##### Registration and Login (with validation)
+
+##### Forgot password
+
+##### Assign task to another user
+
+##### Add/remove editor to list
+
 ### Backend
 
 Application has four layers:
