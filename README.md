@@ -1,20 +1,20 @@
 # To-do List Web Application
 
-### Web Application demonstration
+## Web Application demonstration
 
-##### CRUD operations with to-do lists and tasks
+#### CRUD operations with to-do lists and tasks
 
-##### Tasks filtration, pagination and searching
+#### Tasks filtration, pagination and searching
 
-##### Registration and Login (with validation)
+#### Registration and Login (with validation)
 
-##### Forgot password
+#### Forgot password
 
-##### Assign task to another user
+#### Assign task to another user
 
-##### Add/remove editor to list
+#### Add/remove editor to list
 
-### Backend
+## Backend
 
 Application has four layers:
 - [UI](./TodoListApp.WebApp) (ASP.NET WEB APP)
@@ -22,9 +22,13 @@ Application has four layers:
 - [Database](./TodoListApp.Database) (Class Libarary)
 - [API Client](./TodoListApp.ApiClient) (Class Libarary)
 
-All custom services and ASP.NET services were used in project with help of DI container. So services were injected from constructor and were used as interfaces to follow dependency inversion.
+All custom services and ASP.NET services were used in project with help of DI container. So services were injected from constructor to controllers and were used as interfaces to follow dependency inversion. Dependensice were added to service collection with help of extension methods in classes [ServiceCollectionExtension (API)](./TodoListApp.WebApi/Extensions/ServiceCollectionExtension.cs) and [ServiceCollectionExtension (APP)](./TodoListApp.WebApp/Extensions/ServiceCollectionExtension.cs)<br/><br/>
 
-##### WEB Application (UI)
+In this project Serialog were used for logging to track user's actions in console. Serialog were configured to host of API and APP in extension method of the classes [HostExtension (API)](./TodoListApp.WebApp/Extensions/HostExtension.cs) and [HostExtension (APP)](./TodoListApp.WebApi/Extensions/HostExtension.cs).<br/><br/>
+
+Since in the project four layers, there are different models for all of them. So it was necessery to provide [ModelsExtension (API)](./TodoListApp.WebApi/Extensions/ModelsExtension.cs) and [ModelsExtension (APP)](./TodoListApp.WebApp/Extensions/ModelsExtension.cs) to easily and without dublication convert objects from one type to another. 
+
+#### WEB Application (UI)
 UI layer has three main Controllers:
 - [Account](./TodoListApp.WebApp/Controllers/AccountController.cs)
 - [TodoLists](./TodoListApp.WebApp/Controllers/TodoListsController.cs)
@@ -32,21 +36,22 @@ UI layer has three main Controllers:
 
 [AccountController](./TodoListApp.WebApp/Controllers/AccountController.cs) gives user possibility to register, login, change password and log out. All of it were made with help of ASP.NET Entity Framework Identity tools such as UserManager and SignInManager. Token generates after authorization and stores in cookies during hour or seven days (in case user check "remember me"). For making requests to API through API Client, token is necessery, because without valid token in header, response would be with status code 401. [AuthHeaderHandler](./TodoListApp.WebApp/Handlers/AuthHeaderHandler.cs) (inherited from DelegatingHandler) checks if token is valid and put it to header of request. It uses [JwtTokenGenerator](./TodoListApp.WebApp/Helpers/JwtTokenGenerator.cs) to generate new token in case token in cookies expired, but in the same time user checked "Remember me" checkbox. If some errors accur, handler deletes token from cookies to not store old information. Also Account controller works with [EmailSender](./TodoListApp.WebApp/Services/EmailSender.cs) to sent messages after registration (user can confirm email) and also to use functionality of Forgot Password (change password after email confirmation). All forms have validation of inputs, so user instantly sees an error if there is a mistake. With help of Identity, If user tries to use method which has Authorize attribute - user is redirected to Login.
 
-##### WEB API
+[TodoListsController](./TodoListApp.WebApp/Controllers/TodoListsController.cs) uses [TodoListApiClientService]() to manipulate with database. Controller has 
+#### WEB API
 
-##### Database
+#### Database
 In this project were used Microsoft SQL Server. Application has two databases: TodoListsDB and UsersDB (identity). Connection Strings are storing in appsettings.json.
 TodoListsDB stores to-do lists and tasks. UsersDB stores information about users.
 
-##### API Client
+#### API Client
 This project was created to send requests to API
 
-##### Nuget packeges
+#### Nuget packeges
 
-### FrontEnd
+## FrontEnd
 
-##### Views
+#### Views
 
-##### Java Script
+#### Java Script
 
-##### Bootstrap
+#### Bootstrap
