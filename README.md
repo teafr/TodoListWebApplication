@@ -45,7 +45,9 @@ There are three controllers:
 - [TodoListsController](./TodoListApp.WebApi/Controllers/TodoListsController.cs)
 - [TodoListsController](./TodoListApp.WebApi/Controllers/TodoListsController.cs)
 
-Base controller has method for interaction with database with help of services.
+[Base](./TodoListApp.WebApi/Controllers/BaseController.cs) controller has method to operate with service. [TodoLists](./TodoListApp.WebApi/Controllers/TodoListsController.cs) and [Tasks](./TodoListApp.WebApi/Controllers/TodoListsController.cs) controllers inherited from [Base](./TodoListApp.WebApi/Controllers/BaseController.cs) controller and have documentations. All actions have attributes for spacifing which status codes can be returnd as response. Also every action has attribute which difines route and http method.
+
+In [ServiceCollectionExtension](./TodoListApp.WebApi/Extensions/ServiceCollectionExtension.cs) was configured JWT Bearer to securely exchange data between API and APP. Because of JWT Bearer Authorization, only authorizezd users can successfuly use API.
 
 #### Database
 In this project were used Microsoft SQL Server. Application has two databases: TodoListsDB and UsersDB (identity). Connection Strings are storing in appsettings.json.
