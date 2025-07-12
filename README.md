@@ -39,6 +39,13 @@ UI layer has three main Controllers:
 TodoLists and Tasks controllers have exception handling and logging. With help of UserManager some methods can check user for existance or get current user. [TodoListsController](./TodoListApp.WebApp/Controllers/TodoListsController.cs) uses [TodoListApiClientService](./TodoListApp.ApiClient/Services/TodoListApiClientService.cs) to manipulate with to-do lists. Controller has CRUD operations and deleting/adding operations with editors. [TasksController](./TodoListApp.WebApp/Controllers/TasksController.cs) uses [TaskApiClientService](./TodoListApp.ApiClient/Services/TaskApiClientService.cs) to manipulate with tasks. Controller contains CRUD operations. Index action has filtration and pagination of all tasks, assiggned to user. There are an actions for managing comment/tag, assign of the task, searching tasks and changing status of the task.<br/>
 
 #### WEB API
+API layer provides interaction with TodoListDB and follows REST architectural style. <br/>
+There are three controllers:
+- [BaseController](./TodoListApp.WebApi/Controllers/BaseController.cs)
+- [TodoListsController](./TodoListApp.WebApi/Controllers/TodoListsController.cs)
+- [TodoListsController](./TodoListApp.WebApi/Controllers/TodoListsController.cs)
+
+Base controller has method for interaction with database with help of services.
 
 #### Database
 In this project were used Microsoft SQL Server. Application has two databases: TodoListsDB and UsersDB (identity). Connection Strings are storing in appsettings.json.
