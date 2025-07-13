@@ -1,5 +1,15 @@
 # To-do List Web Application
 
+To-do List Web Application have such functions:
+- Check to-do lists in navigation menu and create/edit/delete them. 
+- See tasks in specific to-do list
+- Review all assigned tasks and filter them by: status, tag and due date. Also to sort and see next/previous page
+- Manage tags and comments
+- Assign task to another user
+- Add/remove editors to to-do lists
+- Authenticate/Authorize
+- Change passwored in case user forgot it
+
 ## Web Application demonstration
 
 #### CRUD operations with to-do lists and tasks
@@ -51,11 +61,6 @@ In [ServiceCollectionExtension](./TodoListApp.WebApi/Extensions/ServiceCollectio
 
 #### Databases
 In this project were used Microsoft SQL Server. Application has two databases: TodoListsDB and UsersDB (identity). Connection Strings are storing in appsettings.json. In this project was used ORM Entity Framework Core for code-first approach. TodoListsDB stores to-do lists and tasks and has such entities: [TodoList](./TodoListApp.Database/Entities/TodoListEntity.cs), [Task](./TodoListApp.Database/Entities/TaskEntity.cs) and [Status](./TodoListApp.Database/Entities/StatusEntity.cs). UsersDB stores information about users and contains Identity tables, but instead of IdentityUser was used [ApplicationUser](TodoListApp.WebApp/Models/AuthenticationModels/ApplicationUser.cs) which is inherited from IdentityUser.
-
-#### Models
-Main models: 
-
-#### Nuget packeges
 
 ## FrontEnd
 
