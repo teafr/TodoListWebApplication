@@ -13,18 +13,19 @@ Web Application has such functions:
 ## Web Application demonstration
 
 ### Tasks filtration and pagination
-![assined tasks](./Resources/assigned-tasks.gif)
+![Tasks filtration and pagination gif](./Resources/assigned-tasks.gif)
 
 ### CRUD operations with to-do lists and tasks
-![CRUD operations with tasks and to-do lists](./Resources/CRUD-operations.gif)
-
-### Registration and Login (with validation)
-
-### Forgot password
+![CRUD operations with to-do lists and tasks gif](./Resources/CRUD-operations.gif)
 
 ### Assign task to another user
 
 ### Add/remove editor to list
+
+### Registration and Login
+![Registration and Login gif](./Resources/registration-and-login.gif)
+
+### Forgot password and Logout 
 
 ## Backend
 
