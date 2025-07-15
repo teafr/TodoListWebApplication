@@ -1,6 +1,6 @@
 # To-do List Web Application
 
-Web Application have such functions:
+Web Application has such functions:
 - Review all assigned tasks and filter them by: status, tag and due date. Also to sort them and see next/previous page
 - Check to-do lists in navigation menu and create/edit/delete them. 
 - See tasks in specific to-do list
@@ -12,18 +12,19 @@ Web Application have such functions:
 
 ## Web Application demonstration
 
-#### Tasks filtration, pagination and searching
+### Tasks filtration and pagination
 ![assined tasks](./Resources/assigned-tasks.gif)
 
-#### CRUD operations with to-do lists and tasks
+### CRUD operations with to-do lists and tasks
+![CRUD operations with tasks and to-do lists](./Resources/CRUD-operations.gif)
 
-#### Registration and Login (with validation)
+### Registration and Login (with validation)
 
-#### Forgot password
+### Forgot password
 
-#### Assign task to another user
+### Assign task to another user
 
-#### Add/remove editor to list
+### Add/remove editor to list
 
 ## Backend
 
@@ -42,7 +43,7 @@ In this project Serialog were used for logging to track user's actions in consol
 
 Since in the project three layers, there are different models for all of them. So it was necessary to provide [ModelsExtension (API)](./TodoListApp.WebApi/Extensions/ModelsExtension.cs) and [ModelsExtension (APP)](./TodoListApp.WebApp/Extensions/ModelsExtension.cs) to easily and without dublication convert objects from one type to another.<br/><br/>
 
-#### WEB Application (UI)
+### WEB Application (UI)
 UI layer has three main Controllers:
 - [Account](./TodoListApp.WebApp/Controllers/AccountController.cs)
 - [TodoLists](./TodoListApp.WebApp/Controllers/TodoListsController.cs)
@@ -54,7 +55,7 @@ TodoLists and Tasks controllers have exception handling and logging. Both of the
 
 Also there are [Components](./TodoListApp.WebApp/Components) in UI layer for [serching users](./TodoListApp.WebApp/Components/SearchUsersViewComponent.cs), [getting tasks by tag](./TodoListApp.WebApp/Components/GetTasksByTagViewComponent.cs), [task menu](./TodoListApp.WebApp/Components/TaskMenuViewComponent.cs) and [to-do list menu](./TodoListApp.WebApp/Components/TodoListMenuViewComponent.cs). These components were created to avoid duplication.
 
-#### WEB API
+### WEB API
 API layer provides interaction with TodoListDB and follows REST architectural style. <br/>
 There are three controllers:
 - [BaseController](./TodoListApp.WebApi/Controllers/BaseController.cs)
@@ -65,13 +66,13 @@ There are three controllers:
 
 In [ServiceCollectionExtension](./TodoListApp.WebApi/Extensions/ServiceCollectionExtension.cs) was configured JWT Bearer to securely exchange data between API and APP. Because of JWT Bearer Authorization, only authorizezd users can successfuly use API.
 
-#### Databases
+### Databases
 In this project were used Microsoft SQL Server. Application has two databases: TodoListsDB and UsersDB (identity). Connection Strings are stored in appsettings.json. In this project was used ORM Entity Framework Core for code-first approach. TodoListsDB stores to-do lists and tasks and has such entities: [TodoList](./TodoListApp.Database/Entities/TodoListEntity.cs), [Task](./TodoListApp.Database/Entities/TaskEntity.cs) and [Status](./TodoListApp.Database/Entities/StatusEntity.cs). UsersDB stores information about users and contains Identity tables, but instead of IdentityUser was used [ApplicationUser](TodoListApp.WebApp/Models/AuthenticationModels/ApplicationUser.cs) which is inherited from IdentityUser.
 
 ## FrontEnd
 
-#### Views
+### Views
 
-#### Java Script
+### Java Script
 
-#### Bootstrap
+### Bootstrap
