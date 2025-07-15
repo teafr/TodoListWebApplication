@@ -12,9 +12,10 @@ Web Application have such functions:
 
 ## Web Application demonstration
 
-#### CRUD operations with to-do lists and tasks
-
 #### Tasks filtration, pagination and searching
+![assined tasks](./Resources/assigned-tasks.gif)
+
+#### CRUD operations with to-do lists and tasks
 
 #### Registration and Login (with validation)
 
