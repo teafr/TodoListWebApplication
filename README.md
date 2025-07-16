@@ -19,13 +19,16 @@ Web Application has such functions:
 ![CRUD operations with to-do lists and tasks gif](./Resources/CRUD-operations.gif)
 
 ### Assign task to another user
+![Assign task to another user gif](./Resources/assign-of-task.gif)
 
 ### Add/remove editor to list
+![Add/remove editor to list](./Resources/add-and-remove-editor.gif)
 
 ### Registration and Login
 ![Registration and Login gif](./Resources/registration-and-login.gif)
 
 ### Forgot password and Logout 
+![Forgot password and Logout gif](./Resources/forgot-password-and-logout.gif)
 
 ## Backend
 
