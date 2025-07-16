@@ -8,6 +8,7 @@
     <AnalysisMode>AllEnabledByDefault</AnalysisMode>
     <AnalysisLevel>latest</AnalysisLevel>
     <CodeAnalysisTreatWarningsAsErrors>false</CodeAnalysisTreatWarningsAsErrors>
+    <UserSecretsId>a786df48-7643-4520-a7fe-7420427de287</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
