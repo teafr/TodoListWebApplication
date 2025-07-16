@@ -258,7 +258,7 @@ public class TasksController : Controller
             if (result.StatusCode == HttpStatusCode.NoContent)
             {
                 Log.Information("User {UserId} updated task with ID {TaskId} and title '{TaskTitle}'", currentUser.Id, taskViewModel.Id, taskViewModel.Title);
-                return this.RedirectToAction("GetTasks", "TodoLists", new { todoListId = taskViewModel.TodoListId });
+                return this.RedirectToAction("Details", new { taskId = taskViewModel.Id });
             }
             else if (result.StatusCode == HttpStatusCode.NotFound)
             {
