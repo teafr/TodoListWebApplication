@@ -78,5 +78,4 @@ In this project were used Microsoft SQL Server. Application has two databases: T
 ### Views
 
 ### Java Script
-
-### Bootstrap
+To make some actions dynamical, in project participated [click on row in table](./TodoListApp.WebApp/wwwroot/js/task-table.js) event and [hidden form](./TodoListApp.WebApp/wwwroot/js/hidden-form.js) functions. Files were added to [main layout](./TodoListApp.WebApp/Views/Shared/_Layout.cshtml).
