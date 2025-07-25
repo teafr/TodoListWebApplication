@@ -10,6 +10,17 @@ Web Application has such functions:
 - Authenticate/Authorize
 - Change passwored in case user forgot it
 
+Project uses such architecture patterns: Pipe-Filter, MVC and Layered. Also project has REST architecture style for API.
+
+There are three layers:
+- [UI - presentation](./TodoListApp.WebApp) (ASP.NET WEB App MVC)
+- [API - business logic](./TodoListApp.WebApi) (ASP.NET WEB API)
+- [Database - data storage](./TodoListApp.Database) (Class Libarary)
+
+Additional two projects:
+- [API Client](./TodoListApp.ApiClient) (Class Libarary)
+- [API Models](./TodoListApp.WebApi.Models) (Class Libarary)
+
 ## Web Application demonstration
 
 ### Tasks filtration and pagination
@@ -30,16 +41,7 @@ Web Application has such functions:
 ### Forgot password and Logout 
 ![Forgot password and Logout gif](./Resources/forgot-password-and-logout.gif)
 
-## Backend
-
-Application has three layers:
-- [UI](./TodoListApp.WebApp) (ASP.NET WEB APP)
-- [API](./TodoListApp.WebApi) (ASP.NET WEB API)
-- [Database](./TodoListApp.Database) (Class Libarary)
-
-And additional two projects:
-- [API Client](./TodoListApp.ApiClient) (Class Libarary)
-- [API Models](./TodoListApp.WebApi.Models) (Class Libarary)
+## Business logic 
 
 <br/>All custom services and ASP.NET services were used in project with help of DI container. So services were injected and were used as interfaces to follow dependency inversion. Dependencies were added to service collection with help of extension methods in classes [ServiceCollectionExtension (API)](./TodoListApp.WebApi/Extensions/ServiceCollectionExtension.cs) and [ServiceCollectionExtension (APP)](./TodoListApp.WebApp/Extensions/ServiceCollectionExtension.cs)<br/>
 
@@ -47,8 +49,8 @@ In this project Serialog were used for logging to track user's actions in consol
 
 Since in the project three layers, there are different models for all of them. So it was necessary to provide [ModelsExtension (API)](./TodoListApp.WebApi/Extensions/ModelsExtension.cs) and [ModelsExtension (APP)](./TodoListApp.WebApp/Extensions/ModelsExtension.cs) to easily and without dublication convert objects from one type to another.<br/><br/>
 
-### WEB Application (UI)
-UI layer has three main Controllers:
+### WEB Application
+ WEB Application has three main Controllers with logic:
 - [Account](./TodoListApp.WebApp/Controllers/AccountController.cs)
 - [TodoLists](./TodoListApp.WebApp/Controllers/TodoListsController.cs)
 - [Tasks](./TodoListApp.WebApp/Controllers/TasksController.cs)
@@ -60,7 +62,7 @@ TodoLists and Tasks controllers have exception handling and logging. Both of the
 Also there are [Components](./TodoListApp.WebApp/Components) in UI layer for [serching users](./TodoListApp.WebApp/Components/SearchUsersViewComponent.cs), [getting tasks by tag](./TodoListApp.WebApp/Components/GetTasksByTagViewComponent.cs), [task menu](./TodoListApp.WebApp/Components/TaskMenuViewComponent.cs) and [to-do list menu](./TodoListApp.WebApp/Components/TodoListMenuViewComponent.cs). These components were created to avoid duplication.
 
 ### WEB API
-API layer provides interaction with TodoListDB and follows REST architectural style. <br/>
+API provides interaction with TodoListDB and follows REST architectural style. <br/>
 There are three controllers:
 - [BaseController](./TodoListApp.WebApi/Controllers/BaseController.cs)
 - [TodoListsController](./TodoListApp.WebApi/Controllers/TodoListsController.cs)
@@ -70,10 +72,11 @@ There are three controllers:
 
 In [ServiceCollectionExtension](./TodoListApp.WebApi/Extensions/ServiceCollectionExtension.cs) was configured JWT Bearer to securely exchange data between API and APP. Because of JWT Bearer Authorization, only authorizezd users can successfuly use API.
 
-### Databases
+## Data storage
+
 In this project were used Microsoft SQL Server. Application has two databases: TodoListsDB and UsersDB (identity). Connection Strings are stored in secret.json. In this project was used ORM Entity Framework Core for code-first approach. TodoListsDB stores to-do lists and tasks and has such entities: [TodoList](./TodoListApp.Database/Entities/TodoListEntity.cs), [Task](./TodoListApp.Database/Entities/TaskEntity.cs) and [Status](./TodoListApp.Database/Entities/StatusEntity.cs). UsersDB stores information about users and contains Identity tables, but instead of IdentityUser was used [ApplicationUser](TodoListApp.WebApp/Models/AuthenticationModels/ApplicationUser.cs) which is inherited from IdentityUser.
 
-## FrontEnd
+## Presentation
 
 ### Views
 There are [views](./TodoListApp.WebApp/Views) for actions of all controllers in WEB APP. Controllers folders: [Account](./TodoListApp.WebApp/Views/Account), [TodoLists](./TodoListApp.WebApp/Views/TodoLists) and [Tasks](./TodoListApp.WebApp/Views/Tasks). [Shared](./TodoListApp.WebApp/Views/Shared) folder has partial views, layouts and [components](./TodoListApp.WebApp/Views/Shared/Components). In project were created layouts which inherited from [main layout](./TodoListApp.WebApp/Views/Shared/_Layout.cshtml): [tasks filtration nav menu](./TodoListApp.WebApp/Views/Shared/_TaskLayout.cshtml), [to-do lists nav menu](./TodoListApp.WebApp/Views/Shared/_TodoListLayout.cshtml) and [without any menu](./TodoListApp.WebApp/Views/Shared/_CenterLayout.cshtml). Also there is layout for [login/registration/forgot password](./TodoListApp.WebApp/Views/Shared/_AccountLayout.cshtml). To avoit dublication of displaing tasks table, [tasks partial](./TodoListApp.WebApp/Views/Shared/_TasksPartial.cshtml) was created and was used in many views. To split logic and seperate it from [main layout](./TodoListApp.WebApp/Views/Shared/_Layout.cshtml), [Login](./TodoListApp.WebApp/Views/Shared/_LoginPartial.cshtml) was made.
